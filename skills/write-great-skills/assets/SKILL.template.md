@@ -11,9 +11,9 @@ and the per-repo config and notes file that hold project facts.>
 
 ## 0. Check setup
 
-Run `scripts/doctor.sh`. Fix each `missing` line with `references/setup.md`, asking once before
-installing anything, and confirm each `session` line yourself. <Delete this step if the skill needs
-nothing outside itself.>
+Run `<skill>/scripts/doctor.sh`. Fix each `missing` line with `<skill>/references/setup.md`, asking
+once before installing anything, and confirm each `session` line yourself. <Delete this step if the
+skill needs nothing outside itself.>
 
 **Done when** doctor exits 0.
 

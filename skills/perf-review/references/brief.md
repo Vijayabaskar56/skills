@@ -1,34 +1,44 @@
 # Area agent brief
 
-Send this text to each area agent, with every `<...>` filled. Send it unchanged apart from the
-fill-ins, so findings from different agents compare. The primitives agent gets the same brief with
-`<area>` set to "shared primitives" and `<files>` set to the widest-reach list from
-`diff-areas.sh`, plus any changed text component, press wrapper, list wrapper, provider or root
-layout.
+Send the text below the rule to each area agent with every `{{...}}` replaced; those are the
+lead's fill-ins. Leave every `<...>` as is; the agent fills those in its reply. Send it unchanged
+apart from the fill-ins, so findings from different agents compare. The primitives agent gets the
+same brief with `{{area}}` set to "shared primitives" and `{{files}}` set to the `widest reach`
+files from `diff-areas.sh` (skipping constant, id-catalog, type and config modules), plus any
+changed text component, press wrapper, list wrapper, provider or root layout.
+
+| Fill-in | Value |
+| --- | --- |
+| `{{repo}}` | absolute path of the app repo |
+| `{{stack}}` | framework, platform and the libraries that matter for frames, from package.json: animation, list, image, navigation, styling, state |
+| `{{base}}`, `{{head}}` | the two shas on the `range` line of `diff-areas.sh` |
+| `{{basis}}` | the `basis` line |
+| `{{area}}`, `{{files}}` | the area name and its file lines from `diff-areas.sh` |
+| `{{perf_commits}}` | the perf commits from `diff-areas.sh`, plus any the user named, or "none" |
+| `{{already_found}}` | findings the lead already has, or "none" |
+| `{{repo_rules}}` | lines from AGENTS.md or CLAUDE.md about lists, animation, effects or lint, or "none" |
 
 ---
 
 Performance regression review, read-only. Edit no files and run nothing that writes.
 
-Repo: `<repo path>`. Stack: `<framework, platform, and the libraries that matter for frames, read
-from package.json: animation, list, image, navigation, styling, state>`.
-Range: `<base>..<head>` (`<how it was resolved>`). Only these files are yours: `<area>`:
+Repo: `{{repo}}`. Stack: {{stack}}.
+Range: `{{base}}..{{head}}` ({{basis}}). Only these files are yours, area `{{area}}`:
 
 ```
-<the area's lines from diff-areas.sh>
+{{files}}
 ```
 
-Diff with `git diff <base> <head> -- <path>`. Read files as shipped with `git show <head>:<path>`;
-the working tree may differ, and `<head>` is what users run. Follow an import out of your area only
-to learn what a changed call costs.
+Diff with `git diff {{base}} {{head}} -- <path>`. Read files as shipped with
+`git show {{head}}:<path>`; the working tree may differ, and `{{head}}` is what users run. Follow an
+import out of your area only to learn what a changed call costs.
 
 Earlier perf fixes this range could undo (read the ones that touch your area with
-`git show <sha>`): `<perf commits from diff-areas.sh, plus any the user named>`.
+`git show <sha>`): {{perf_commits}}.
 
-Already found, so do not re-report; say if your area makes one worse: `<lead's list, or none>`.
+Already found, so do not re-report; say if your area makes one worse: {{already_found}}.
 
-Repo rules that bear on performance (list wrappers, animation rules, lint): `<lines from
-AGENTS.md or CLAUDE.md, or none>`.
+Repo rules that bear on performance (list wrappers, animation rules, lint): {{repo_rules}}.
 
 ## What to look for
 
@@ -105,7 +115,7 @@ Under 600 words. Findings ranked by severity, then reach, each as:
 
 ```
 - [likely cause | minor] <cause in one line>
-  file:line at <head>; diff: "<quoted added or removed line>"
+  file:line at {{head}}; diff: "<quoted added or removed line>"
   cost: <which thread, what triggers it, how often>
   felt: <screen and gesture>
   severity x reach: <high|medium|low> x <wide|screen|narrow>; confidence: <high|medium|low>

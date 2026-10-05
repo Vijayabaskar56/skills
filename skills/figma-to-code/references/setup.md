@@ -9,8 +9,10 @@ the user's yes; ask once for the whole list.
 | --- | --- | --- |
 | Node 18+ | `scripts/text-diff.mjs` | nvm, mise or `brew install node` |
 | python3 | reading pixel rows during measurement | `xcode-select --install` or `brew install python` |
+| Pillow | image-asset transparency and gradient sampling scripts | `python3 -m pip install Pillow` |
 | ffmpeg, ffprobe | cropping captures, reading sizes and pixel rows | `brew install ffmpeg` |
 | argent | React Native capture, describe, native frames | `npx @swmansion/argent@latest init -y`, then read its `argent-device-interact` skill |
+| adb (optional) | React Native captures on Android | `brew install --cask android-platform-tools` |
 | agent-browser | web capture, snapshot, DOM measurement | `npm i -g agent-browser && agent-browser install` |
 
 Only the verification tool for the configured platform is required.
@@ -32,7 +34,7 @@ while the Figma desktop app is open with the Dev Mode MCP server turned on in it
 
 ## Critic agent
 
-Step 5 hands the visual judgement to a critic that sees only the two images. In Claude Code, copy
+SKILL.md's "Close the visual loop" step hands the visual judgement to a critic that sees only the two images. In Claude Code, copy
 `assets/figma-critic.md` to `~/.claude/agents/figma-critic.md` (or the repo's `.claude/agents/`)
 once. Its tool list names the Figma screenshot tool of the desktop server; change it to the remote
 server's tool name if only the remote server is set up. Without the agent file, use the fallback

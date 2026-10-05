@@ -15,7 +15,7 @@ row, and every row is ✓ equal, fixed, or recorded as a named platform constrai
 | ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------ |
 | A. Figma authored  | `get_design_context` on the **section** node id                     | per `data-node-id`: instance, size, leading, tracking, hex, features, alignment, case, wrap, truncation |
 | B. Repo effective  | component source + the text component (config `textComponent`) + the token file (config `tokenFile`) | the same fields, fully expanded                              |
-| C. Render          | step-5 visual loop (capture cropped to the section, `figma-critic`) | proof the fonts loaded and the fix rendered; nothing else    |
+| C. Render          | the visual loop (capture cropped to the section, `figma-critic`)    | proof the fonts loaded and the fix rendered; nothing else    |
 
 ## Read column A
 
@@ -78,8 +78,8 @@ audit does not reopen it.
 - Row separators usually arrive as `border-[#hex] border-b` classes on row frames. Border-bottom on
   rows 1…n-1 is the same visual as border-top on rows 2…n; compare colour, not attachment.
 - Compare stroke colour the same exact-hex way as text colour.
-- **Thickness is a decision, not a default.** Figma authors 1 logical px. Record anything else
-  (a hairline) in the ledger as a deliberate deviation.
+- **Thickness is a decision, not a default.** Figma authors 1 logical px; render 1pt or 1px.
+  Anything else (a hairline) is a deviation the user approves and the ledger records.
 
 ## Ledger format
 
@@ -94,8 +94,8 @@ A row with an unresolved field is not a row; it is a missing record.
 ## Close the pass
 
 Apply `✗` fixes (shared-token changes only when every consumer should change), run the config
-`validate` command, then run the step-5 visual loop on the section crop with a `figma-critic`
-subagent. The critic proves rendering; the ledger proved the values.
+`validate` command, then run the visual loop (`visual-loop.md`) on the section crop with a
+`figma-critic` subagent. The critic proves rendering; the ledger proved the values.
 
 ## React Native
 
@@ -149,8 +149,9 @@ A numeric weight that equals a named cut (400, 500, 600) maps to the named token
 
 ### Dividers
 
-`StyleSheet.hairlineWidth` is ⅓ px on 3x devices. Keeping it is usually right; record it as a
-deliberate deviation from Figma's 1 px.
+Render a divider at 1pt (`width: 1`, `h-px`). `StyleSheet.hairlineWidth` is ⅓ pt on 3x devices
+and all but disappears; keep it only when the user approved it and the ledger records the
+deviation from Figma's 1pt.
 
 ## Web (React)
 
@@ -242,5 +243,5 @@ Capsize method), and record which you used.
 ### Dividers
 
 1 CSS px is Figma's 1 logical px. A `0.5px` border draws a device hairline on 2x and 3x screens;
-treat it as the same deliberate deviation. A bare `<hr>` carries browser margins and an inset
+it is the same deviation, kept only when the user approved it and the ledger records it. A bare `<hr>` carries browser margins and an inset
 border; reset them or use a bordered element.

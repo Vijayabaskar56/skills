@@ -13,14 +13,10 @@ button instead of Home, Screenshot and Rotate buttons.
 Cause: Xcode 27 replaces Simulator.app with DeviceHub, and argent cannot drive a simulator shown
 there.
 
-Fix: quit DeviceHub and reopen the device in the configured Simulator app before running any flow:
-
-```bash
-osascript -e 'quit app "DeviceHub"'
-open -a "$(scripts/config.sh .ios.simulatorApp)" --args -CurrentDeviceUDID <udid>
-```
-
-If `ios.simulatorApp` is empty, install an Xcode 26.x and set it (`setup.md`).
+Fix: run `scripts/open-simulator.sh "$(scripts/config.sh .ios.device)"` before running any flow. It
+quits DeviceHub and reopens the device in the configured Simulator app. If it exits 1 because
+DeviceHub is still running, quit DeviceHub from its menu and rerun. If `ios.simulatorApp` is empty,
+install an Xcode 26.x and set it (`setup.md`).
 
 ## Tree reads time out on Spotlight or WidgetRenderer
 

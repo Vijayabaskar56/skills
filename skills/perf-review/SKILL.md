@@ -10,9 +10,18 @@ Reads a diff and names the changes most likely to cost frames. It never edits co
 the fixes. Scripts are in this skill's `scripts/`; run them by absolute path with `--repo <app
 repo>`. The repo's AGENTS.md or CLAUDE.md wins over this file.
 
+## 0. Check the setup
+
+Run `scripts/doctor.sh --repo <repo>`. If it prints `missing`, apply the fix it names or stop.
+Confirm the `session` line yourself; without a subagent tool, review alone in step 3.
+
+**Done when** doctor exits 0 and you know whether subagents are available.
+
 ## 1. Resolve the range
 
-Pick the form that matches the request and run `scripts/diff-areas.sh --repo <repo> <range>`:
+If `<repo>/.perf-review.json` exists, its `tagPrefix` is the build tag prefix; a prefix or refs in
+the request override it for this run. Pick the form that matches the request and run
+`scripts/diff-areas.sh --repo <repo> <range>`:
 
 | Request | Range argument |
 | --- | --- |
@@ -21,13 +30,21 @@ Pick the form that matches the request and run `scripts/diff-areas.sh --repo <re
 | last build vs now, builds are tagged | `--since-build <tagPrefix>` |
 | last build vs now, no tags | `--since-time "<upload time>"` |
 
-Find the tag prefix with `git tag -l --sort=-creatordate | head`. For `--since-time`, take the
-upload time from the store (App Store Connect, Play Console) or ask the user; the base is the last
-commit before that time, so it is a guess and the report says so. If the request names builds you
-cannot map to refs, ask once which refs they are.
+With no config, find the prefix with `git tag -l --sort=-creatordate | head`; once a run with it
+succeeds, write `{"tagPrefix": "<prefix>"}` to `<repo>/.perf-review.json`. For `--since-time`,
+take the upload time from the store (App Store Connect, Play Console) or ask the user; the base is
+the last commit before that time, so it is a guess and the report says so. If the request names
+builds you cannot map to refs, ask once which refs they are.
 
-**Done when** the script printed `range`, `basis`, `native` and the areas. Save the output; later
-steps quote it.
+If the script exits 1, read its `error` line:
+
+- `the newest build is HEAD`: rerun with `--builds <tagPrefix>`.
+- `no file changes in range ...; try the next older pair: A..B`: rerun with `A..B`, and report
+  that the newer pair changed no files.
+- Anything else, or a pair that also has no changes: ask once which refs to compare.
+
+**Done when** the script exited 0 and printed `range`, `basis`, `native` and the areas. Save the
+output; later steps quote it.
 
 ## 2. Gather the brief's fill-ins
 
@@ -38,13 +55,15 @@ steps quote it.
 - If `native` lists files, note that a native or config change can cost frames outside what this
   review reads, and say so in the report.
 
-**Done when** every `<...>` in `references/brief.md` has a value or "none".
+**Done when** the brief text each agent will get (below the rule in `references/brief.md`)
+contains no `{{`.
 
 ## 3. Plan the agents
 
 - One agent per area that holds code. Drop areas with only docs, tests or assets. Merge an area
   under about 30 changed lines into its nearest neighbour. Stop at 8 area agents.
-- One primitives agent for the widest reach: the top of the script's `widest reach` list, plus
+- One primitives agent for the widest reach: the top of the script's `widest reach` list,
+  skipping constant, id-catalog, type and config modules (importing them costs no frames), plus
   any changed text, icon, press, list or image wrapper, provider, root layout or app entry.
 - If the whole diff is under about 150 lines, skip the fan-out and apply the brief yourself.
 
@@ -61,17 +80,18 @@ send it once more with the same brief.
 ## 5. Verify the top findings
 
 Merge duplicates (the primitives agent and an area agent often report one cause twice). Then, for
-every finding marked likely cause or high severity:
+every finding marked likely cause or high severity, take `<base>` and `<head>` from the `range`
+line and run:
 
-1. Re-read the cited lines as shipped: `git show <head>:<path> | sed -n '<from>,<to>p'`.
-2. Confirm the range changed them: `git diff <base> <head> -- <path>`.
-3. For any claim that lint does or does not enforce something, run
+1. `scripts/verify-finding.sh --repo <repo> <base> <head> <path> <from> <to>`. It prints the
+   lines as shipped, exits 1 when the range did not touch them, and prints an approximate
+   importer count. Add `--reach '<pattern>'` to count uses of a symbol or prop instead.
+2. For any claim that lint does or does not enforce something, run
    `scripts/find-lint-rule.sh --repo <repo> '<rule pattern>'` and read the matched line's severity.
    A claim about a config, wrapper or prop that "already handles" it gets opened and read.
-4. Check the reach: count call sites or instances with `git grep` at `<head>`.
 
-Drop a finding that fails 1 or 2. Downgrade one whose reach or claim does not hold. Mark each row
-verified or not.
+Drop a finding when verify-finding exits 1. Downgrade one whose `reach` line or claim does not
+hold. Mark each row verified or not.
 
 **Done when** every likely-cause row says `verified` or gives the reason it could not be.
 
@@ -91,7 +111,8 @@ INP from web-vitals.
 
 ## Hard rules
 
-- Stay read-only: edit, stage and commit nothing, and leave the fixes to the user.
+- Stay read-only: edit, stage and commit nothing, and leave the fixes to the user. The one write
+  is `.perf-review.json` in step 1.
 - Cite file:line at the range's head, not the working tree.
 - Label a time-matched base as a guess until the user confirms it.
 - Call a finding a likely cause only after step 5 verified it.
@@ -99,6 +120,7 @@ INP from web-vitals.
 ## Report
 
 - Range, basis (say "guess" when time-matched), commit count and the `native` line
+- The `dirty` line, if printed, and that those uncommitted files were not reviewed
 - Agents sent, by area, and the areas that came back clean
 - **Likely cause** table: # | cause | where felt (screen, gesture) | severity x reach | file:line | fix | trade-off
 - **Minor** table with the same columns

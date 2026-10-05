@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// Usage: text-diff.mjs <raw-node.json> <rendered.txt>
+// Usage: text-diff.mjs <raw.json> <rendered.txt>
 // Compares every Figma text string from the raw read against the strings a render exposes.
 // <rendered.txt> can be argent `describe` output (React Native), an agent-browser `snapshot`
 // (web), or plain text with one string per line. Prints exact, case-only, spacing-only or missing
-// per Figma string. Exits 1 when any string is spacing-only (always a transcription bug), 2 on
+// per Figma string, then a count of each. Exits 1 when any string is spacing-only (always a transcription bug), 2 on
 // bad input.
 import { readFileSync } from "node:fs";
 
 const [rawPath, renderedPath] = process.argv.slice(2);
 if (!rawPath || !renderedPath) {
-  console.error("usage: text-diff.mjs <raw-node.json> <rendered.txt>");
+  console.error("usage: text-diff.mjs <raw.json> <rendered.txt>");
   process.exit(2);
 }
 
@@ -61,8 +61,12 @@ for (const row of rows) {
   const rendered = row.rendered === null ? "" : `  <- rendered "${row.rendered}"`;
   console.log(`${row.match.padEnd(12)} "${row.figma}"${rendered}`);
 }
-const spacing = rows.filter((row) => row.match === "spacing-only").length;
-const missing = rows.filter((row) => row.match === "missing").length;
-console.log(`\n${rows.length} Figma strings: ${spacing} spacing-only, ${missing} missing.`);
+const count = (match) => rows.filter((row) => row.match === match).length;
+const spacing = count("spacing-only");
+const missing = count("missing");
+console.log(
+  `\n${rows.length} Figma strings: ${count("exact")} exact, ${count("case-only")} case-only, ` +
+    `${spacing} spacing-only, ${missing} missing.`,
+);
 if (missing > 0) console.log("Name each missing string: live data by design, or a dropped span.");
 process.exit(spacing > 0 ? 1 : 0);

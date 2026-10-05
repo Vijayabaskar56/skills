@@ -6,7 +6,8 @@
 #     --since-build PREFIX        the newest PREFIX* tag..HEAD
 #     --since-time "TIME"         last commit before TIME..HEAD (a guess; TIME is the upload time)
 # Resolves the range and prints it, native/config files touched, changed files grouped by area
-# with line counts, the changed files with the most importers, and perf commits before the base.
+# with line counts, the changed files with the most approx. importers, and perf commits before the
+# base. A failed range prints "error ..." with the next range to try.
 # Area is the first N path segments (default 2) of the file's directory; a leading src/ is free.
 set -euo pipefail
 
@@ -20,17 +21,19 @@ while [ $# -gt 0 ]; do
     --repo) repo="$2"; shift 2 ;;
     --depth) depth="$2"; shift 2 ;;
     --builds | --since-build | --since-time) mode="$1"; a="${2:?$1 needs a value}"; shift 2 ;;
-    -h | --help) sed -n '2,10p' "$0"; exit 0 ;;
+    -h | --help) sed -n '2,11p' "$0"; exit 0 ;;
     *..*) mode=explicit; a="${1%%..*}"; b="${1#*..}"; shift ;;
     *) if [ -z "$a" ]; then a="$1"; else b="$1"; fi; mode=explicit; shift ;;
   esac
 done
-[ -n "$mode" ] || { sed -n '2,10p' "$0" >&2; exit 2; }
+[ -n "$mode" ] || { sed -n '2,11p' "$0" >&2; exit 2; }
 cd "$repo"
 git rev-parse --git-dir >/dev/null
 
 fail() { echo "error $*" >&2; exit 1; }
 label=""
+same_hint=""
+empty_hint=""
 case "$mode" in
   explicit)
     [ -n "$b" ] || b=HEAD
@@ -38,16 +41,20 @@ case "$mode" in
     label="$a..$b"
     ;;
   --builds)
-    tags="$(git tag -l "$a*" --sort=-version:refname | head -2)"
-    [ "$(printf '%s\n' "$tags" | grep -c .)" -eq 2 ] || fail "need two tags matching '$a*', found: ${tags:-none}"
+    tags="$(git tag -l "$a*" --sort=-version:refname | head -3)"
+    [ "$(printf '%s\n' "$tags" | grep -c .)" -ge 2 ] || fail "need two tags matching '$a*', found: ${tags:-none}"
     b="$(printf '%s\n' "$tags" | sed -n 1p)"
     a="$(printf '%s\n' "$tags" | sed -n 2p)"
+    older="$(printf '%s\n' "$tags" | sed -n 3p)"
+    [ -z "$older" ] || empty_hint="; try the next older pair: $older..$a"
     basis="build tags"
     label="$a..$b"
     ;;
   --since-build)
     tag="$(git tag -l "$a*" --sort=-version:refname | head -1)"
     [ -n "$tag" ] || fail "no tag matches '$a*'"
+    same_hint="; the newest build is HEAD, so use --builds $a"
+    empty_hint="; HEAD has the same files as the newest build, so use --builds $a"
     a="$tag"; b=HEAD
     basis="build tag to HEAD"
     label="$a..HEAD"
@@ -64,7 +71,7 @@ esac
 
 base="$(git rev-parse --verify --quiet "$a^{commit}")" || fail "unknown ref '$a'"
 head="$(git rev-parse --verify --quiet "$b^{commit}")" || fail "unknown ref '$b'"
-[ "$base" != "$head" ] || fail "base and head are the same commit ($a)"
+[ "$base" != "$head" ] || fail "base and head are the same commit ($a)$same_hint"
 
 if ! git merge-base --is-ancestor "$base" "$head"; then
   base="$(git merge-base "$base" "$head")" || fail "'$a' and '$b' share no history"
@@ -80,7 +87,7 @@ echo "head     $(show "$head")"
 echo "commits  $(git rev-list --count "$base..$head")"
 
 numstat="$(git diff --numstat --no-renames "$base" "$head")"
-[ -n "$numstat" ] || fail "no file changes in range"
+[ -n "$numstat" ] || fail "no file changes in range $label$empty_hint"
 
 native_re='(^|/)(package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb?|Podfile(\.lock)?|app\.json|app\.config\.[a-z]+|eas\.json|babel\.config\.[a-z]+|metro\.config\.[a-z]+|vite\.config\.[a-z]+|next\.config\.[a-z]+|webpack\.config\.[a-z]+|build\.gradle(\.kts)?|gradle\.properties|Info\.plist)$|^(ios|android|patches)/'
 native="$(printf '%s\n' "$numstat" | cut -f3 | grep -E "$native_re" | paste -sd ' ' - || true)"
@@ -88,7 +95,7 @@ echo "native   ${native:-none (JS and styles only)}"
 
 if [ "$head" = "$(git rev-parse HEAD)" ]; then
   dirty="$(git status --porcelain --untracked-files=no | grep -c . || true)"
-  [ "$dirty" -eq 0 ] || echo "dirty    $dirty uncommitted files are not in the range"
+  [ "$dirty" -eq 0 ] || echo "dirty    $dirty uncommitted files are not in the range and are not reviewed"
 fi
 
 echo
@@ -110,8 +117,8 @@ printf '%s\n' "$numstat" | awk -F'\t' -v depth="$depth" '
 ' | tr '\036' '\0' | sort -z -rn | tr '\0' '\n' | cut -f2- | grep -v '^$'
 
 echo
-echo "widest reach (top 10 changed code files by importers at head)"
-echo "2-hop direct  file"
+echo "widest reach (top 10 changed code files by approx. importers at head, matched by file basename)"
+echo "approx. importers: 2-hop direct  file"
 changed_code="$(printf '%s\n' "$numstat" | cut -f3 | grep -E '\.(tsx?|jsx?|mjs|cjs)$' |
   grep -vE '(\.test\.|\.spec\.|__tests__/|(^|/)tests?/)' || true)"
 {

@@ -8,13 +8,14 @@ skill; use it to reach the node's state, then capture here. For argent itself, l
 ## Capture
 
 Launch the app before opening a custom-scheme deep link, navigate to the node's state, then
-capture at `scale: 1` and keep the returned path:
+capture with `--scale 1` (argent downscales iOS and Android captures to 0.25 without it) and keep
+the saved path:
 
 ```bash
 argent run list-devices --json
 argent run open-url --udid <udid> --url "<config verify.open, filled in>"
 argent run debugger-component-tree --port <metro-port> --device_id <udid> --maxNodes 150
-argent run screenshot --udid <udid> --out <scratch>/figma-current.png
+argent run screenshot --udid <udid> --scale 1 --out <scratchpad>/figma-current.png
 ```
 
 If the repo has a section or state deep link, use it instead of scrolling.
@@ -22,8 +23,8 @@ If the repo has a section or state deep link, use it instead of scrolling.
 ## Rendered text for the diff
 
 ```bash
-argent run describe --udid <udid> > <scratch>/rendered.txt
-node scripts/text-diff.mjs <raw-node.json> <scratch>/rendered.txt
+argent run describe --udid <udid> > <scratchpad>/rendered.txt
+node scripts/text-diff.mjs <scratchpad>/figma-<nodeId>/raw.json <scratchpad>/rendered.txt
 ```
 
 ## Scale for the critic
@@ -39,7 +40,8 @@ shadow softens the boundary, take geometry from UIKit:
 ```bash
 argent run native-devtools-status --udid <udid> --bundleId <id>   # restart-app if requiresRestart
 argent run native-find-views --udid <udid> --bundleId <id> \
-  --identifier <testID> --fields className,windowFrame,clipsToBounds --includeAncestors
+  --identifier <testID> --fields className --fields windowFrame --fields clipsToBounds \
+  --includeAncestors
 ```
 
 `windowFrame` with `clipsToBounds` up the ancestor chain is the only way to see a view that

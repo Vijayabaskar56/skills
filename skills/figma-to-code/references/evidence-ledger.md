@@ -1,6 +1,7 @@
 # Evidence ledger
 
-Read this in step 2. It is the full procedure behind the ledger; SKILL.md keeps the minimum.
+Read this in SKILL.md's "Build the evidence ledger" step. It is the full procedure behind the
+ledger (`<scratchpad>/figma-<nodeId>/ledger.md`); SKILL.md keeps the minimum.
 
 ## Account for every visible layer
 
@@ -22,8 +23,8 @@ Read this in step 2. It is the full procedure behind the ledger; SKILL.md keeps 
 | `get_screenshot` | final appearance, overlap, clipping, exporter contradictions |
 | Raw read (`raw-node.js`) | blur type and radii, gradient stops and transforms, visible text, anything flattened |
 
-Generated CSS flattens progressive blur to half its radius and renormalises gradient stops, so
-these two come from the raw read only.
+Generated CSS has been seen to export a progressive blur as a uniform blur at half its radius, and
+it renormalises gradient stops, so take both from the raw read only.
 
 ## Gradient stops
 

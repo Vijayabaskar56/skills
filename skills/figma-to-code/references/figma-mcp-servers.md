@@ -1,12 +1,15 @@
 # Figma MCP servers and asset access
 
-Read this from step 1 when choosing a server is not obvious, when a server is missing or refuses
-connections, or when a tool rejects an argument or the asset directory.
+Read this from SKILL.md's "Lock the target" step when choosing a server is not obvious, when a
+server is missing or refuses connections, or when a tool rejects an argument or the asset
+directory.
 
 ## Choose the server
 
-Two servers expose Figma tools. Pick by task before the first call. Do not fetch the same node
-from both. The names below are the usual ones; the local config may call them something else.
+Two servers expose Figma tools. Pick by task before the first call. A node's metadata, screenshot
+and design context come from that one server; do not fetch them from both. The raw read always
+goes through remote `use_figma`, whichever server served the rest. The names below are the usual
+ones; the local config may call them something else.
 
 | Server | Tools | Reach |
 | --- | --- | --- |

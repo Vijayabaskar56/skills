@@ -23,7 +23,7 @@
         <button class="vbg-button" type="button" id="copy-md">Copy as Markdown</button>
         <span class="vbg-meta" id="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <!-- Optional: a .vbg-stat-strip with 3–4 .vbg-stat tiles, only when the numbers are the point. -->
+      <!-- Optional: a .vbg-stat-strip with 3 or 4 .vbg-stat tiles, only when the numbers are the point. -->
     </div>
 
     <section class="vbg-section" id="table">
@@ -31,8 +31,8 @@
 <thead><tr><th scope="col" class="vbg-custom-toggle-col"><span class="vbg-visually-hidden">Open</span></th><th scope="col">STATUS COLUMN NAME</th><th scope="col">Kind</th><th scope="col">Item</th><th scope="col">In one line</th></tr></thead>
 <tbody>
 
-<!-- One item = one summary row + one detail row. data-detail == detail id; ids are stable slugs (deep-linkable as #slug). -->
-<tr class="vbg-custom-row" data-detail="example-row"><td><button type="button" class="vbg-custom-toggle" aria-expanded="false" aria-controls="example-row"><span aria-hidden="true">▸</span><span class="vbg-visually-hidden">Toggle</span></button></td><td class="vbg-custom-status"><span aria-hidden="true">✅</span><span class="vbg-visually-hidden">Yes</span></td><td>KIND</td><td>Item name</td><td>The one line a skimmer needs — <code class="vbg-mono">/api/path</code> if there is one</td></tr>
+<!-- One item = one summary row + one detail row. data-detail equals the detail id; ids are stable slugs (deep-linkable as #slug). colspan equals the column count. -->
+<tr class="vbg-custom-row" data-detail="example-row"><td><button type="button" class="vbg-custom-toggle" aria-expanded="false" aria-controls="example-row"><span aria-hidden="true">▸</span><span class="vbg-visually-hidden">Toggle</span></button></td><td class="vbg-custom-status"><span aria-hidden="true">✅</span><span class="vbg-visually-hidden">Yes</span></td><td>KIND</td><td>ITEM NAME</td><td>The one line a skimmer needs, with <code class="vbg-mono">/api/path</code> if there is one</td></tr>
 <tr class="vbg-custom-detail" id="example-row" hidden><td colspan="5">
 <p>Detail paragraphs. Nested tables are fine here:</p>
 <table>
@@ -47,7 +47,7 @@
     <section class="vbg-section" id="closing">
       <div class="vbg-flow">
         <h2 class="vbg-heading-20">Closing note heading</h2>
-        <p>One or two paragraphs. Link sibling documents with <a class="vbg-link" href="https://example.vercel.app/">a real URL</a>.</p>
+        <p>One or two paragraphs. Link sibling documents with <a class="vbg-link" href="https://example.com/">a real URL</a>.</p>
       </div>
     </section>
   </main>

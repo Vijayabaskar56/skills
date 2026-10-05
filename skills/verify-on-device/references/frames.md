@@ -2,8 +2,9 @@
 
 Use for timing questions (flicker, a jump, a dropped frame): pull frames with ffmpeg instead of
 watching the video. Crop to the element under test, because full-screen frames are large and mostly
-noise. Take every frame of a short clip, and 1-2 fps or scene changes only from a long one. Write
-frames to the scratchpad.
+noise. Record with `trimStatic: false` and `showTouches: false`, so timestamps match the wall
+clock and no touch marker counts as a scene change. Take every frame of a short clip, and 1-2 fps
+or scene changes only from a long one. Write frames to the scratchpad.
 
 ```bash
 # only the frames where the region changed: a few images instead of hundreds

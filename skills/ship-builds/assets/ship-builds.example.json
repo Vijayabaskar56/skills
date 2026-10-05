@@ -4,6 +4,8 @@
     "bundleId": "com.example.app",
     "workspace": "ios/App.xcworkspace",
     "scheme": "App",
+    "project": "ios/App.xcodeproj",
+    "target": "App",
     "infoPlist": "ios/App/Info.plist",
     "version": "1.0.0",
     "signing": "automatic",

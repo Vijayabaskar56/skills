@@ -19,7 +19,8 @@ repo's `.figma-to-code.json` and the notes file it names; they win over this fil
 
 Run `scripts/doctor.sh <platform>` (use the config's platform, or detect it as in
 `references/first-run.md`). Fix each `missing` line with `references/setup.md`, asking once before
-installing anything. Confirm each `session` line yourself.
+installing anything. Fix an `optional` line only when this run needs that tool (an Android
+capture, a desktop selection). Confirm each `session` line yourself.
 
 **Done when** doctor exits 0 and the Figma MCP tools answer in this session.
 
@@ -33,10 +34,11 @@ are known.
 
 ## 2. Lock the target
 
-Get the node from the link in the message or earlier in the session; with neither, ask. Never work
-from memory or the user's screenshot alone. Extract the file key and exact node id. Pick the Figma
-server before the first call and fetch each node from one server only; `references/figma-mcp-servers.md`
-says which.
+Get the node from the link in the message or earlier in the session; with neither, read the
+desktop selection; if desktop is down, ask. Never work from memory or the user's screenshot alone.
+Extract the file key and exact node id. Pick the Figma server before the first call:
+`references/figma-mcp-servers.md` says which. Metadata, screenshot and design context come from
+that one server; the raw read always goes through remote `use_figma`.
 
 Then call, on that exact node, every time, even if you fetched it an hour ago:
 
@@ -44,18 +46,20 @@ Then call, on that exact node, every time, even if you fetched it an hour ago:
 2. `get_screenshot` for the visual source of truth.
 3. `get_design_context` for authored styles and assets.
 4. The raw read: load `figma-use`, run `references/raw-node.js` through remote `use_figma` with the
-   node id filled in, and save the JSON. It returns every effect, gradient and image fill exactly as
-   authored plus the visible text strings.
+   node id filled in, and save the JSON to `<scratchpad>/figma-<nodeId>/raw.json` (`:` in the id
+   written as `-`), overwriting an earlier run's. It returns every effect, gradient and image fill
+   exactly as authored plus the visible text strings.
 
 If the frame has no children, or its context is only a translucent fill with a backdrop blur, it
 is a backdrop or a neighbour: read the desktop selection or ask for the element's link.
 
-**Done when** the screenshot and metadata describe the requested state, the raw read is saved, and
-the target is one exact node.
+**Done when** the screenshot and metadata describe the requested state, `raw.json` holds this
+run's raw read, and the target is one exact node.
 
 ## 3. Build the evidence ledger
 
-Give every visible layer a source of evidence; `references/evidence-ledger.md` has the fields and
+Write the ledger to `<scratchpad>/figma-<nodeId>/ledger.md`, updating it in place on a rerun, and
+give every visible layer a source of evidence; `references/evidence-ledger.md` has the fields and
 the text, colour and icon procedure. Read completely, before implementing, each reference the node
 calls for:
 
@@ -71,7 +75,7 @@ For every text descendant, match its node id in `get_design_context` and record 
 size, line height, tracking, alignment, colour, width, wrapping, truncation and line count. Check
 each fill and stroke with `scripts/find-color-token.sh <hex> <tokenFile>`.
 
-**Done when** every layer and text descendant has a node-id-matched record, every chosen token is
+**Done when** `ledger.md` gives every layer and text descendant a node-id-matched record, every chosen token is
 expanded and compared, and every weight, shadow slot and colour is exact or answered by the user.
 
 ## 4. Map evidence to the repository
@@ -100,14 +104,14 @@ crop or effect.
 
 Read `references/visual-loop.md` and your platform file: `references/verify-react-native.md`
 (argent) or `references/verify-web.md` (agent-browser). Capture at scale 1, crop to the component,
-run `scripts/text-diff.mjs`, spawn the critic, and fix or record every ranked gap.
+run `scripts/text-diff.mjs <raw.json> <rendered.txt>`, spawn the critic, and fix or record every ranked gap.
 
 **Done when** a critic has judged the current capture and every gap it ranked is fixed or
 recorded as a named platform constraint with its measured impact.
 
 ## 7. Validate
 
-Run the config's `validate` command. For platform-sensitive effects, repeat step 6 on each target
+Run the config's `validate` command. For platform-sensitive effects, repeat "Close the visual loop" on each target
 (iOS and Android, or Chromium and WebKit).
 
 **Done when** validate exits 0 and each requested target has a matching capture.
@@ -128,9 +132,9 @@ Run the config's `validate` command. For platform-sensitive effects, repeat step
 
 ## Report
 
-- Node id, server used, and the saved raw read path
+- Node id, server used, and the `raw.json` and `ledger.md` paths
 - Questions asked and the answers recorded in the ledger
-- `text-diff.mjs` counts: exact, spacing-only, missing, with each missing string named
+- `text-diff.mjs` counts: exact, case-only, spacing-only, missing, with each missing string named
 - The critic's ranked gaps, each marked fixed or constraint with its measured impact
 - Capture paths per target, and the validate exit status
 - Skipped steps, each with its reason

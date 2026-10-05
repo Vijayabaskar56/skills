@@ -20,7 +20,7 @@ take exact flags from it rather than from memory.
 Save the accessibility snapshot to a file and diff it:
 
 ```bash
-node scripts/text-diff.mjs <raw-node.json> <scratch>/rendered.txt
+node scripts/text-diff.mjs <scratchpad>/figma-<nodeId>/raw.json <scratchpad>/rendered.txt
 ```
 
 If the snapshot omits visually hidden or aria-hidden text that the design shows, extract

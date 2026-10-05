@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Usage: doctor.sh <react-native|web>
 # Checks what figma-to-code needs on this machine. Prints "ok <item> <detail>" or
-# "missing <item> <how to fix>" per line, "optional ..." for extras, then "session <item> <what to confirm>" for the checks
-# only the agent can do. Exits 1 when anything is missing. Setup steps: references/setup.md.
+# "missing <item> <how to fix>" per line, "optional <item> <how to fix>" for tools only some runs
+# need, then "session <item> <what to confirm>" for the checks only the agent can do. Exits 1 when
+# anything is missing. Setup steps: references/setup.md.
 set -euo pipefail
 
 platform="${1:?usage: doctor.sh <react-native|web>}"
@@ -14,15 +15,23 @@ check() {
   else echo "missing $item $fix"; missing=1; fi
 }
 
+check_optional() {
+  local item="$1" cmd="$2" fix="$3" out
+  if out="$(eval "$cmd" 2>&1)" && [ -n "$out" ]; then echo "ok $item ${out%%$'\n'*}"
+  else echo "optional $item $fix"; fi
+}
+
 check node "node -v" "install Node 18+ (nvm, mise or brew install node)"
 check python3 "python3 --version" "xcode-select --install, or brew install python"
+check pillow "python3 -c 'import PIL; print(\"Pillow\", PIL.__version__)'" "python3 -m pip install Pillow (image-asset and gradient pixel checks)"
 check ffmpeg "ffmpeg -version" "brew install ffmpeg"
 check ffprobe "ffprobe -version" "brew install ffmpeg"
 
 case "$platform" in
   react-native)
     check argent "argent --version" "npx @swmansion/argent@latest init -y (references/setup.md)"
-    check xcrun "xcrun --version" "install Xcode for the iOS simulator" ;;
+    check xcrun "xcrun --version" "install Xcode for the iOS simulator"
+    check_optional adb "adb version" "brew install --cask android-platform-tools; needed only for Android captures" ;;
   web)
     check agent-browser "agent-browser --version" "npm i -g agent-browser && agent-browser install" ;;
   *) echo "platform must be react-native or web" >&2; exit 2 ;;

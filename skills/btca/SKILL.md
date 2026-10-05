@@ -1,64 +1,96 @@
 ---
 name: btca
-description: Source-first research over locally cloned reference repos in ~/work/references. Use when the user asks how a library/framework works internally, wants to find an implementation, asks "look at the source of X", says "use btca" or "check references", or any question best answered by reading a real codebase rather than docs (e.g. plate.js, Kvaesitso, super-app-showcase, SuperCmd).
+description: "Use when asked how a library works internally, to find an implementation in its source, 'look at the source of X', 'use btca' or 'check references'. Dispatches a scoped read-only subagent over a cloned reference repo and relays its cited answer. Not for code in the current repo or conceptual questions; read the repo or the docs."
+argument-hint: "library name and the question about its source"
 ---
 
 # btca
 
-Answers source-first questions by dispatching a cheap subagent to read a specific cloned repo under `~/work/references`. Your main context never reads the source files directly — only the subagent's distilled answer comes back.
+Answers source questions by sending a cheap read-only subagent into one cloned repo in the
+references dir. The main context reads only the subagent's answer, never the source files.
 
-## Workflow
+The references dir is `$BTCA_REFERENCES_DIR`, default `~/work/references`. The scripts resolve
+it; take the path from their output instead of typing it.
 
-1. **List what's available.** Always start by running `ls ~/work/references` to see the current set of cloned repos. Do not assume — the folder changes.
+## 0. Check setup
 
-2. **Pick the target folder.**
-   - If the user named a library that matches one of the entries, use it.
-   - If multiple could be relevant, ask the user (don't guess).
-   - If nothing matches, tell the user and ask whether to clone a new repo into that directory before proceeding. Use `git clone --depth=1 <url> ~/work/references/<name>` when they confirm.
+Run `scripts/doctor.sh`. Fix each `missing` line as it says, asking before creating a folder, and
+confirm each `session` line yourself: a read-only search subagent (Explore in Claude Code) and the
+cheapest available model for it (haiku in Claude Code).
 
-3. **Verify the path exists** before dispatching:
-   ```bash
-   test -d ~/work/references/<name> && echo ok
-   ```
+**Done when** doctor exits 0 and prints the references dir.
 
-4. **Dispatch an `Explore` subagent** scoped to that exact folder. Use `model: "haiku"` for cost. The prompt must:
-   - State the absolute path to search in and tell the agent **not to read files outside it**.
-   - Restate the user's question with enough surrounding context that the agent can make judgment calls.
-   - Ask for file paths + line numbers in the answer so the user can jump to source.
-   - Cap the response length (e.g. "under 300 words" or "under 600 words for deep dives").
+## 1. Resolve the repo
 
-   Breadth guidance for the `Explore` agent:
-   - "quick" — single targeted lookup (one symbol, one file).
-   - "medium" — moderate exploration across a few files.
-   - "very thorough" — multi-area sweep across naming conventions.
+Run `scripts/resolve-ref.sh <name>` with the library the user named.
 
-5. **Relay the agent's answer** to the user. Quote `path:line` references verbatim so they're clickable. Do not re-read the source yourself unless the user asks a follow-up that needs more depth — in which case dispatch again with a refined prompt.
+- Exit 0: it printed one absolute path. Use it.
+- Exit 2: it printed several candidates. Ask the user which one, then rerun with that name.
+- Exit 1: no repo matches, and stderr lists what is there. Ask the user whether to clone it and
+  from which URL. If they say yes, go to step 2; if no, stop and suggest the official docs.
 
-## Example dispatch
+**Done when** resolve-ref.sh prints exactly one absolute path.
 
-For "how does plate.js implement the slash command menu?":
+## 2. Clone the repo if missing
+
+Only after the user said yes in this request, run `scripts/clone-ref.sh <git-url> [name]`. It
+reuses the folder when it is already a git repo, otherwise shallow-clones it, and prints the path.
+Then rerun step 1.
+
+**Done when** resolve-ref.sh prints the new repo's absolute path.
+
+## 3. Write the subagent prompt
+
+Build the prompt from:
+
+- The absolute path from step 1, with "Search only inside this directory. Read no file outside it."
+- The user's question, restated with enough context for judgment calls.
+- A request for `path:line` references for every claim.
+- A length cap: under 300 words, or under 600 for a deep dive.
+- Breadth: "medium" for a few files, "very thorough" for a sweep across areas and naming
+  conventions.
+
+**Done when** the prompt contains the absolute path, the question, the citation request, the cap
+and the breadth.
+
+## 4. Dispatch the subagent
+
+Dispatch the read-only search subagent (Explore in Claude Code) with the cheapest available model
+(haiku in Claude Code) and the prompt from step 3. Example:
 
 ```
-ls ~/work/references
-# → confirms `plate` is present
-test -d ~/work/references/plate && echo ok
-
 Agent({
   description: "plate slash menu source dive",
   subagent_type: "Explore",
   model: "haiku",
-  prompt: "Search ONLY inside ~/work/references/plate (do not read files outside this directory). Question: how is the slash command menu implemented? I want to understand the trigger detection, the menu component, and how items are registered. Report key files with path:line references and a short explanation of how the pieces connect. Under 400 words. Breadth: medium."
+  prompt: "Search only inside <absolute path from resolve-ref.sh>. Read no file outside it.
+    Question: how is the slash command menu implemented? Cover trigger detection, the menu
+    component and how items are registered. Cite path:line for each point. Under 400 words.
+    Breadth: medium."
 })
 ```
 
-## When NOT to use this skill
+**Done when** the subagent returns an answer with at least one `path:line` reference.
 
-- The answer is in the user's own working directory — just read it.
-- The library isn't cloned and the user doesn't want to clone it — fall back to WebFetch on official docs.
-- The question is conceptual ("what is X") rather than implementation-level — docs/web search is faster.
+## 5. Relay the answer
 
-## Notes
+Relay the answer and quote its `path:line` references verbatim so they stay clickable. For a
+follow-up that needs more depth, dispatch again with a refined prompt instead of reading the
+source yourself.
 
-- The references directory is **the** cache. Do not clone elsewhere.
-- Shallow clones (`--depth=1`) are fine; full history is rarely needed for source reading.
-- If a repo is stale, `git -C ~/work/references/<name> pull` before dispatching — but only when the user signals they want fresh source.
+**Done when** the reply quotes at least one `path:line` from the subagent.
+
+## Hard rules
+
+- Clone or pull only after the user says yes in this request.
+- Clone only into the references dir, through `scripts/clone-ref.sh`.
+- Search only inside the resolved repo path; pass that absolute path to the subagent.
+- Leave source reading to the subagent; the main context reads its answer only.
+- When the answer is in the current working directory, read it there instead of using this skill.
+
+## Report
+
+- Repo path printed by `resolve-ref.sh`
+- Commit read: `git -C <path> rev-parse --short HEAD`
+- Whether the repo was cloned or pulled this run, and the user's yes that allowed it
+- The subagent's `path:line` list, verbatim

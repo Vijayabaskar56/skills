@@ -10,7 +10,9 @@ Run when `.verify-on-device.json` is missing. Detect facts yourself; ask only fo
 | scheme | `scheme` in app.json / app.config.* |
 | deepLinks | the file that lists the app's deep links (a `DeepLinks` or `linking` object), if any |
 | sectionParam | a query parameter screens read to scroll to a section, if the code has one |
-| flowsDir, recordingsDir | `.argent/flows` and `.argent/recordings` unless the repo keeps them elsewhere |
+| flowsDir | `.argent/flows` unless the repo keeps flows elsewhere |
+| recordingsDir | `argent config get recordings.directory`, else `.argent/recordings` |
+| flowKinds | omit to use the defaults in `scripts/find-flows.sh`; set `{"<glob>": "<kind>"}` (first match wins, replaces the defaults) when the repo names flows another way |
 | deadFlows | flows that no longer run (removed demo logins, deleted screens); empty at first |
 | ios.device | the simulator named in the repo's docs, else the newest booted iPhone |
 | ios.simulatorApp | an installed Xcode 26.x Simulator.app when the active Xcode is 27+, else `null` |
@@ -22,7 +24,11 @@ Read the repo's AGENTS.md, CLAUDE.md and README first and prefer what they say.
 ## 2. Ask once
 
 One `AskUserQuestion` call, only for what detection did not settle: which device and AVD to use,
-and where the notes file goes (default `docs/verify-on-device.md`).
+and where the notes file goes. Put the recommended option first in each question: the device the
+repo's docs name or the one already booted, and `docs/verify-on-device.md` for notes.
+
+The saved answers are defaults. If a request names another device, AVD or platform, use it for that
+run and leave the config unchanged.
 
 ## 3. Write the config
 

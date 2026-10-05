@@ -4,14 +4,7 @@ Run when `.ship-builds.json` is missing. Find facts yourself and ask the user on
 
 ## 1. Log in to asc if needed
 
-If `scripts/doctor.sh` reported `missing asc-auth`, the user logs in with their App Store Connect
-API key (Users and Access, Integrations, App Store Connect API, role App Manager or higher).
-Suggest they type it with a `!` prefix so the output lands in the session:
-
-```bash
-chmod 600 /path/to/AuthKey_XXX.p8
-asc auth login --name <profile> --key-id <KEY_ID> --issuer-id <ISSUER_ID> --private-key /path/to/AuthKey_XXX.p8
-```
+If `scripts/doctor.sh` reported `missing asc-auth`, follow the asc-auth section of `setup.md`.
 
 ## 2. Detect
 
@@ -20,6 +13,7 @@ asc auth login --name <profile> --key-id <KEY_ID> --issuer-id <ISSUER_ID> --priv
 | bundleId | `ios.bundleIdentifier` in app.json or app.config.*, else `PRODUCT_BUNDLE_IDENTIFIER` in the pbxproj |
 | appId | `asc apps list --output json`, matched on bundleId |
 | workspace, scheme | `ls ios/*.xcworkspace`, then `xcodebuild -list -workspace <it>` |
+| project, target | `ls ios/*.xcodeproj`; the app target from `xcodebuild -list -project <it>`, usually the scheme name |
 | infoPlist | `ios/<scheme>/Info.plist` |
 | version | `CFBundleShortVersionString`, or `version` in the app config |
 | validate | package.json scripts: `validate`, else `check`, else `typecheck` and `test` |

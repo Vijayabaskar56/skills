@@ -6,6 +6,15 @@
   "flowsDir": ".argent/flows",
   "recordingsDir": ".argent/recordings",
   "deadFlows": [],
+  "flowKinds": {
+    "*-fragment*": "fragment",
+    "*-edge-cases*": "edge-cases",
+    "*-stress*": "stress",
+    "*-profile*": "profile",
+    "perf-*": "perf",
+    "*smoke*": "smoke",
+    "enter-*": "enter"
+  },
   "ios": {
     "device": "iPhone 17",
     "simulatorApp": "/Applications/Xcode-26.6.0.app/Contents/Developer/Applications/Simulator.app"

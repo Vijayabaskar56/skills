@@ -1,7 +1,7 @@
 # Visual loop
 
-Read this in step 5, together with the platform file (`verify-react-native.md` or `verify-web.md`),
-which supplies the capture and measurement commands.
+Read this in SKILL.md's "Close the visual loop" step, together with the platform file
+(`verify-react-native.md` or `verify-web.md`), which supplies the capture and measurement commands.
 
 ## Capture and crop
 
@@ -28,7 +28,7 @@ A plausible full-screen thumbnail is not evidence of a match.
 Save the rendered strings as the platform file describes, then:
 
 ```bash
-node scripts/text-diff.mjs <raw-node.json> <rendered.txt>
+node scripts/text-diff.mjs <scratchpad>/figma-<nodeId>/raw.json <rendered.txt>
 ```
 
 It lists each Figma string as exact, case-only, spacing-only or missing. A spacing-only mismatch is

@@ -21,8 +21,9 @@ filter: blur(0px);
 backdrop-filter: blur(0px);
 ```
 
-Treat any exported `backdrop-blur-[N]` or `blur(N)` as unverified. Figma writes a progressive
-`0 → 12` background blur as `backdrop-blur-[6px]`: half the radius, and uniform.
+Treat any exported `backdrop-blur-[N]` or `blur(N)` as unverified. Figma has been seen to export a
+progressive `0 → 12` background blur as a uniform `backdrop-blur-[6px]`, half the radius; take the
+raw read's radius.
 
 Run [`raw-node.js`](raw-node.js) (it reads effects for the whole subtree), or, for a single layer,
 load the `figma-use` skill before any `use_figma` call and query it read-only:

@@ -1,196 +1,148 @@
 ---
 name: create-lint-rule
-description: Use when adding a guardrail to the shadcn-x lint plugin (src/lint/), or when the user asks to "ban" or "enforce" an on-system pattern. Encodes the full process — name the goal, enumerate every form the bad pattern takes, find a mechanical signal for exceptions, then write the rule + tests.
+description: Use when adding or changing a rule in the shadcn-x lint plugin (src/lint/), or when asked to ban or enforce an on-system pattern in shadcn-x. Takes the rule from goal and reference check through every form, mechanical exceptions, code, registration, tests and AGENTS.md. Not for adding a component or its raw-HTML guardrail; use create-component.
+argument-hint: "pattern to ban or enforce, or the rule name to change"
 ---
 
-# Create a shadcn-x Lint Rule
+# Create a shadcn-x lint rule
 
-shadcn-x's lint plugin (`src/lint/`) is the **escape-hatch fence**: it makes
-off-system code inexpressible. A rule here is an _opinion enforcer_, not a
-syntax checker. The work is in the thinking before the code — steps 1–4 are
-the front-loaded design discipline, and a rule that skips them ships as a sieve.
+This skill is written for one repo, the public shadcn-x component library, and names its paths and
+rules on purpose. It does not apply to other lint setups. Run every command and script from the
+shadcn-x root; the scripts live in this skill's `scripts/` folder. The shadcn-x `AGENTS.md`
+overrides this file where they disagree.
 
-Rules are authored with oxlint's `createOnce` API and run under both oxlint
-(primary/fast) and ESLint (the hedge, and the path into consumer repos).
+The plugin in `src/lint/` keeps app code on-system: a rule bans an off-system form and names the
+replacement. Steps 1 to 4 are design and decide whether a rule should exist at all; skipping them
+ships a rule that misses forms or flags legitimate code. Read `references/rule-idioms.md` the first
+time you use this skill. Track each step as a todo.
 
-Read first (once per session): `src/lint/index.ts` (registration),
-`src/lint/rule-kit.ts` (`perFileOption` / `findAncestor` / `matchesSource`),
-and one existing rule end-to-end. The two idiomatic shapes are:
+## 0. Check setup
 
-- **`no-raw-design-values.ts`** — ban a raw literal form, allow a token form.
-- **`no-raw-html.ts`** — ban a tag, allow when a primitive covers it.
+Run `scripts/doctor.sh`. Fix each `missing` line with `references/setup.md`, asking once before
+running `bun install` or creating symlinks.
 
-Worked example of the full design arc (including the wrong turns):
-`src/lint/rules/no-manual-overflow.ts` + `tests/lint/no-manual-overflow.test.ts`.
+**Done when** doctor exits 0.
 
-## Checklist (make a TodoWrite item per step)
+## 1. State the goal in one sentence
 
-### 1. State the goal in one sentence
+Write the goal as a ban plus its replacement: "Use `<ScrollArea>` instead of manual overflow", not
+"discourage overflow in some places". If it does not fit one sentence, the rule is not ready.
 
-If you can't, the rule isn't ready. "Use `<ScrollArea>` instead of manual
-overflow." Not "discourage overflow in some places."
+**Done when** the sentence names both the banned form and the replacement.
 
-**Completion criterion:** the goal fits in one sentence and names the
-replacement, not just the ban.
+## 2. Read the reference before designing
 
-### 2. Read the reference BEFORE designing
+Find out how the canonical sources treat the pattern before deciding what to ban:
 
-This is the step that kills premature rules. Before deciding what to ban, find
-out how the canonical source treats the pattern:
+- Base UI source at `references/base-ui/packages/react/src/`: read the primitive that owns the
+  behavior. Example: Select's popup and list apply `overflowY: 'auto'` inline through
+  `LIST_FUNCTIONAL_STYLES` in `select/popup/utils.ts`, so a blanket overflow ban fights Select.
+  shadcn-x answered with the `scroll` constants in `src/styles/tokens.stylex.ts`.
+- shadcn/ui and coss at `references/ui` and `references/coss`.
+- StyleX docs at `docs/stylex-docs/`: check for a type-level fence or a tokenization hook. Example:
+  `learn/static-types.mdx` shows a user-written `NoLayout` type, built with `StyleXStylesWithout`,
+  that omits `overflow`; StyleX itself does not classify the key. `api/javascript/defineConsts.mdx`
+  is the tokenization hook.
 
-- The Base UI source lives at `references/base-ui/` (symlinked). Read the
-  primitive that owns the behavior. Does it force consumers to set the
-  property? (Base UI's `Popup` forces `overflowY: auto` on consumers — so
-  banning it would fight the framework.)
-- The shadcn/coss reference: `references/ui`, `references/coss`.
-- The StyleX docs: `docs/stylex-docs/` — does StyleX already classify the
-  property (e.g. `overflow` is a "layout-changing" key in
-  `StyleXStylesWithout`), or offer a tokenization hook (`defineConsts`)?
+If the reference shows the banned form is the canonical API, plan a tokenized opt-in (step 4) or
+drop the rule.
 
-If the reference reveals the bad pattern is actually the canonical API, stop
-and reconsider — the rule may need a tokenization opt-in (step 3) rather than
-a blanket ban, or it may be a bad fit for a rule entirely.
+**Done when** you can cite a file and line where a canonical source endorses or rejects the pattern.
 
-**Completion criterion:** you can cite, with file path + line, where the
-canonical source either endorses or rejects the pattern.
+## 3. Enumerate every form the bad pattern takes
 
-### 3. Enumerate EVERY form the bad pattern takes
+Grep `src`, `tests` and `references/base-ui` for the pattern, then list each syntactic shape with
+one code example and the AST node that carries it. `references/rule-idioms.md` shows the three
+forms `no-manual-overflow` covers. Each form becomes a visitor.
 
-Coverage is the difference between a fence and a sieve. List every syntactic
-shape before writing visitors. For `overflow` it was three:
+**Done when** the written list has an example per form and every grep hit maps to a listed form.
 
-1. `stylex.create({ root: { overflow: "auto" } })` — `Property` inside a
-   `CallExpression`
-2. `<Foo sx={{ overflow: "auto" }}>` — `Property` inside a `JSXAttribute`
-3. `<Box overflow="auto">` — a `JSXAttribute` directly
+## 4. Find a mechanical signal for every exception
 
-Each form becomes a visitor. Miss one and the rule is a false sense of safety.
+Each exception needs an AST predicate: node type, ancestor chain, value form, import source, or
+`context.filename`. Prefer a tokenized opt-in (ban the raw literal, allow a `defineConsts` or
+`defineVars` member) over structural detection. `references/rule-idioms.md` has the ban, allow and
+gate idiom.
 
-**Completion criterion:** the list is exhaustive — you've grepped the
-codebase AND the reference for the pattern and accounted for each shape.
+If an exception has no such signal, stop: ship the rule at `warn`, or use a `StyleXStylesWithout`
+type plus review, and say why in the report.
 
-### 4. Find a MECHANICAL signal for every exception
+**Done when** each exception is written down as an AST predicate, or the report states why a rule
+is the wrong tool.
 
-This is the hardest step and where most rules die. An exception needs a
-_machine-detectable_ signal, not a vibe.
+## 5. Write or update the rule
 
-- ❌ "Base UI menus that need native overflow" — not detectable; would require
-  data-flow analysis (trace which stylex key lands on which JSX element).
-- ✅ "Values that resolve to a `defineConsts`/`defineVars` named export" —
-  detectable (member expression, not a string literal), and the import name
-  documents intent at the call site.
+Read `src/lint/index.ts`, `src/lint/rule-kit.ts` and one existing rule end to end first. If
+`src/lint/rules/<rule-name>.ts` exists, edit it; otherwise create it. Use
+`defineRule({ meta, createOnce })` from `@oxlint/plugins`, a one-sentence
+`meta.docs.description` naming the replacement, `meta.messages` with `{{placeholders}}`, and
+`meta.schema` when the rule takes options. Resolve options with `perFileOption`. The helper and
+visitor catalogue is in `references/rule-idioms.md`.
 
-This is the rule idiom — **ban** / **allow** / **gate**:
+**Done when** `bunx oxlint --type-aware src tests` runs with no plugin-load error.
 
-```
-ban:    a raw literal form        (hex string, physical property, 'auto')
-allow:  a tokenized/named form    (token, logical property, scroll.auto)
-gate:   a narrow carve-out        (defineVariants, scroll-area.tsx via context.filename)
-```
+## 6. Register and enable the rule
 
-The preferred `allow` is **tokenization opt-in**: ban the raw literal, allow the
-named form — mirroring `no-raw-design-values` (raw hex bad, token good) so "I
-need this deliberately" is a traceable declaration, not a stray string. Reach
-for tokenization before structural detection.
+Run `scripts/check-rule.sh <rule-name>` and add only the entries it reports missing:
 
-**Key on structure, never on identifiers.** Names are conventions, not
-contracts — the `content` key meant a CSS pseudo-element in one component and a
-slot in another. Detect on AST node type, ancestor chain, or value form, so a
-rename can't slip past the fence.
+- `src/lint/index.ts`: the import, the `rules` entry, and `"shadcn-x/<rule-name>": "error"` in
+  `recommended`.
+- `oxlint.config.ts`: `"shadcn-x/<rule-name>"` under `rules`, at `error`, or `warn` while
+  existing violations are migrated.
 
-If your exception has no positive, structural signal, you don't have a rule
-yet — ship a `warn` or rely on `StyleXStylesWithout`-style type guards + code
-review. A false-positive-prone rule erodes trust in every other rule.
+**Done when** check-rule prints `ok` for the rule file, the three `index.ts` lines and the
+`oxlint.config.ts` entry.
 
-**Completion criterion:** every exception has a detector expressible as an
-AST predicate, OR you've documented why a rule is the wrong tool.
+## 7. Write tests
 
-### 5. Write the rule
+If check-rule finds a test file, edit it. Otherwise create `tests/lint/<rule-name>.test.ts`
+(some rules keep theirs in `tests/lint/rules/`). Copy the `RuleTester` setup from
+`tests/lint/no-manual-overflow.test.ts`. Write one invalid case per form from step 3, one valid
+case per allowed value or context, and the false-positive traps from `references/rule-idioms.md`.
 
-File: `src/lint/rules/<rule-name>.ts`. Follow the established anatomy:
+**Done when** `bunx vitest run <test file>` passes and the invalid cases cover every listed form.
 
-- `defineRule({ meta, createOnce })` from `@oxlint/plugins`.
-- `meta.docs.description` — one sentence, names the replacement.
-- `meta.messages` — template with `{{placeholders}}`.
-- `meta.schema` — JSON Schema if the rule takes options.
-- `createOnce(context)` returns a visitor object with a `before()` hook when
-  you need per-file option resolution.
-- Use `perFileOption(context, defaults)` from `rule-kit.ts` for options —
-  `context.options` is `null` at `createOnce` setup time, only populated
-  per-file. Read `context.filename` inside `before()` or a visitor, never at
-  `createOnce` top level (it throws there).
+## 8. Fix the existing violations
 
-Helpers in `rule-kit.ts`:
-- `findAncestor(node, predicate, stopWhen?)` — walk parents; the `stopWhen`
-  arg prevents the walk escaping a boundary (e.g. stop at `JSXElement` so a
-  literal in JSX _children_ isn't mistaken for one in a JSX _attribute_).
-- `matchesSource(value, sources)` — import-path matching.
+Count the sites first: `bunx oxlint --type-aware src tests 2>&1 | grep -c "<rule-name>"`. Migrate
+real debt to the replacement. For a legitimate exception, use the token, or add
+`// oxlint-disable-next-line shadcn-x/<rule-name> -- <reason>` citing the framework constraint.
 
-Available visitors include `JSXAttribute`, `JSXOpeningElement`, `Property`,
-`Literal`, `ImportDeclaration` — see existing rules for the idioms.
+**Done when** the same count prints 0.
 
-**Completion criterion:** `bunx oxlint --type-aware src tests` runs the rule
-with no plugin-load errors.
+## 9. Run the repo checks
 
-### 6. Register + enable
+Run every command in the shadcn-x `AGENTS.md` `## Verify` section, then
+`bunx knip --use-tsconfig-files`. If one fails, fix it and rerun the whole set.
 
-Edit `src/lint/index.ts`:
-- Import the rule.
-- Add to the `rules` object inside `definePlugin({...})`.
-- Add to the `recommended` config: `"shadcn-x/<rule-name>": "error"`.
+**Done when** every command exits 0 (oxlint warnings are allowed, per `AGENTS.md`).
 
-Edit `oxlint.config.ts`: add `"shadcn-x/<rule-name>": "error"` (or `"warn"`
-while migrating) under `rules`.
+## 10. Document the rule in AGENTS.md
 
-**Completion criterion:** the rule is enabled at `error` (or deliberately
-`warn`) in both configs.
+`AGENTS.md` names rules in two lists. Add each only if missing:
 
-### 7. Write tests
+- `## On-system rules`: a bullet stating the rule as the action to take, ending with
+  `` (`<rule-name>`) ``.
+- `## Layout`: append `` `<rule-name>` `` to the `src/lint/` bullet's `Rules:` list.
 
-File: `tests/lint/<rule-name>.test.ts`. Use the ESLint `RuleTester` pattern
-(see `tests/lint/no-manual-overflow.test.ts`):
+**Done when** `scripts/check-rule.sh <rule-name>` exits 0.
 
-- `new RuleTester({ languageOptions: { parser: tsParser, parserOptions: { ecmaFeatures: { jsx: true } } } })`
-- `ruleTester.run(name, plugin.rules["<rule-name>"] as never, { valid, invalid })`
-  at the **top level of a `describe`** — never inside an `it()`
-  (`ruleTester.run` is suite-scoped).
-- Cover every visitor (one invalid case per form from step 3).
-- Cover every allowed value / context (one valid case each).
-- Cover false-positive traps: plain object literals that aren't CSS,
-  computed keys, names that look like the target but aren't.
+## Hard rules
 
-**Completion criterion:** `bunx vitest run tests/lint/<rule-name>.test.ts`
-passes, and the test file has at least one invalid case per form enumerated
-in step 3.
+- Call `ruleTester.run` at the top level of a `describe` callback, outside any `it()`.
+- Read `context.filename` and `context.options` inside `before()` or a visitor; `context.options`
+  is `null` at `createOnce` setup time.
+- Key detection on AST structure (node type, ancestor chain, value form), never on identifier or
+  key names.
+- Grant exceptions at the site with a token or an inline disable carrying a reason. Leave
+  `oxlint.config.ts` overrides and file allow-lists for the rule out.
 
-### 8. Fix the existing violations
+## Report
 
-Run `bunx oxlint --type-aware src tests 2>&1 | grep "<rule-name>"` to find
-every site the rule now flags. Each violation is either:
-
-- **Real debt** → migrate to the replacement (e.g. wrap in `<ScrollArea>`,
-  swap to a token). Verify with the full `Verify` block before moving on.
-- **Legitimate exception** → opt into the escape hatch (e.g. use the
-  `scroll.auto` token, or add `// oxlint-disable-next-line shadcn-x/<rule-name>
-  -- <reason>` with a justification that cites the framework constraint).
-
-Avoid file-level allow-lists in the rule config — they hide debt and silently
-exempt _new_ violations in those files. Inline disables or tokens keep the
-justification visible at the site.
-
-**Completion criterion:** `bunx oxlint --type-aware src tests` reports **zero**
-violations from the new rule.
-
-### 9. Verify (all must pass)
-
-```sh
-bunx tsc --noEmit
-bunx oxlint --type-aware src tests   # exit 0; warnings ok
-bunx knip --use-tsconfig-files       # exit 0
-bunx vitest run                      # all green
-```
-
-### 10. Update `AGENTS.md`
-
-Add the rule to the "On-system rules" list with a one-line description, so
-the next agent knows the fence exists.
+- Rule file path, and whether it was created or updated
+- Level in `oxlint.config.ts` (check-rule prints `level`)
+- The forms from step 3, each with its invalid-case count, and the valid-case count
+- Violation count for the rule before and after step 8
+- Each inline disable added: file, line and reason
+- Exit code of each step 9 command and of the final `scripts/check-rule.sh`
+- Skipped steps, each with its reason

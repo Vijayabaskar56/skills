@@ -1,6 +1,7 @@
 # Translation traps
 
-Read this in step 4 before writing code, and again in step 5 when a gap has no obvious cause.
+Read this in SKILL.md's "Implement literally" step before writing code, and again in "Close the
+visual loop" when a gap has no obvious cause.
 Each trap shipped at least once. Read the neutral list, then the section for config `platform`.
 
 ## Every platform
@@ -30,11 +31,12 @@ Each trap shipped at least once. Read the neutral list, then the section for con
   being able to see.
 - **Measuring a match you can already see proves nothing.** It spends reloads to re-derive what
   the diff and the two images already say.
-- **An exported blur value is never the authored one.** Generated CSS writes a progressive `0 → 12`
-  background blur as `backdrop-blur-[6px]`: half the radius, and uniform. Two sheet footers
-  shipped wrong from that line. The raw read's `blurType`, `radius` and `startRadius` are the
-  values.
-- **Figma's default stroke is 1 unit.** Render it as 1pt or 1px, never as a hairline utility.
+- **An exported blur value is not the authored one.** Generated CSS has been seen to export a
+  progressive `0 to 12` background blur as a uniform `backdrop-blur-[6px]`, half the radius. Two
+  sheet footers shipped wrong from that line. Take the raw read's `blurType`, `radius` and
+  `startRadius`.
+- **Figma's default stroke is 1 unit.** Render it as 1pt or 1px. A hairline is a deviation the
+  user approves and the ledger records.
 - **No Figma notes in code.** Never cite a node id, "Figma says" or an authored value in a comment,
   and never explain a workaround in one. Name the value with a constant or token; Figma stays the
   source of truth and this skill re-reads it before every fix.
@@ -53,7 +55,7 @@ Each trap shipped at least once. Read the neutral list, then the section for con
 
 - **A hairline utility is not 1pt.** `StyleSheet.hairlineWidth` (and any `hairline` class built on
   it) is a third of a point on a 3x screen and all but disappears. A 1pt line is `w-px` / `h-px`
-  or `width: 1`.
+  or `width: 1`; keep a hairline only when the user approved it and the ledger records it.
 - **A native progressive blur view needs no carrier gradient.** `ProgressiveBlurView` (from
   `@sbaiahmed1/react-native-blur`, see [`progressive-blur.md`](progressive-blur.md)) reveals the
   blur without painted alpha.

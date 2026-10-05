@@ -18,7 +18,8 @@ The step runs only when `.ship-builds.json` has this block:
   "device": "iPhone 17",
   "metroPort": 8081,
   "retries": 2,
-  "flowsDir": ".argent/flows"
+  "flowsDir": ".argent/flows",
+  "whenUnavailable": "ask"
 }
 ```
 
@@ -31,6 +32,7 @@ The step runs only when `.ship-builds.json` has this block:
 | ready | testID of the first screen after a cold launch; the profiler starts once it shows |
 | device | booted simulator name or UDID; empty picks the first booted simulator |
 | retries | extra attempts per flow when a run fails (default 2) |
+| whenUnavailable | `ask` or `skip`: what step 3 does when Metro, the simulator or argent is missing (default `ask`) |
 
 ## Before measuring
 
@@ -85,7 +87,7 @@ counts renders inside slow commits, for reading only.
 
 ## When compare fails
 
-1. Re-measure only the failing flows: `scripts/perf-measure.sh <scratch>/recheck.json perf-zone`,
+1. Re-measure only the failing flows: `scripts/perf-measure.sh <scratch>/recheck.json <flow>`,
    then compare again. Simulator runs vary by 10 to 15 percent; a regression that does not
    reproduce is noise.
 2. If it reproduces, open the markdown report named in the run's `analyze.json` and name the
@@ -95,17 +97,18 @@ counts renders inside slow commits, for reading only.
 ## Moving the baseline
 
 The baseline is the last shipped build. Step 7 copies the check's output over it after an
-upload. To rebuild it by hand, check out the shipped tag's JS (Metro serves the working tree),
-run `scripts/perf-measure.sh <baseline>`, and keep the `sha` it records. A baseline measured on a
-different simulator model or iOS runtime is not comparable; the `device` field says which.
+upload. When the baseline file does not exist yet, step 3 saves its run as the first baseline and
+the check passes. To rebuild it by hand, check out the shipped tag's JS (Metro serves the working
+tree), run `scripts/perf-measure.sh <baseline>`, and keep the `sha` it records. A baseline measured
+on a different simulator model or iOS runtime is not comparable; the `device` field says which.
 
 ## Frame stalls (optional, manual)
 
 The profiler sees JS work, not dropped frames on the UI thread or GPU. For a flow whose fix was
 about animation or blur, record it with `screen-recording-start` and `-stop` around
-`argent flow run`, then read frame stalls with the repo's own tool if it has one (for example
-`.argent/tools/stall.sh <video>`). Compare the longest stall against a recording of the baseline
-build by eye; it is not part of the gate.
+`argent flow run`, then read frame stalls with a frame-stall script named in the repo's notes, if
+it has one. Compare the longest stall against a recording of the baseline build by eye; it is not
+part of the gate.
 
 ## Limits
 

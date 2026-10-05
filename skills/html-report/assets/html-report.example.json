@@ -1,0 +1,11 @@
+{
+  "outDir": "docs/artifacts",
+  "client": "CLIENT",
+  "product": "PRODUCT",
+  "siblingUrls": {
+    "backend-asks": "https://backend-asks.example.com/"
+  },
+  "artifactUrls": {
+    "api-inventory": "https://claude.ai/artifact/00000000-0000-0000-0000-000000000000"
+  }
+}

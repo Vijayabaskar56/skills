@@ -9,7 +9,7 @@ installing anything.
 | jq | reading `.verify-on-device.json` | `brew install jq` (macOS 15+ ships it) |
 | ffmpeg | frames and crops from recordings | `brew install ffmpeg` |
 | Xcode | iOS simulators, `xcrun simctl` | App Store. Install the Xcode named in `ios.simulatorApp` too, if the config sets one |
-| adb, emulator | Android | Android Studio's platform-tools and emulator on PATH |
+| adb, emulator | Android; `emulator -list-avds` must list `android.avd` | Android Studio's platform-tools and emulator on PATH |
 | the Android start tool | booting emulators the project's way | whatever `android.start` names; without it, argent `boot-device` is used |
 
 ## Why a second Xcode

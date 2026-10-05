@@ -40,8 +40,8 @@ colour match, and only the ramp is off. Before writing any stop list:
    and the exported image was solid white.
 7. **Look for a layer blur on the same frame.** When the fill is flat, a progressive layer
    blur is what draws the visible fade: a solid rectangle whose edge is blurred with a radius
-   that grows along the blur axis. Model it as the blurred edge (a Gaussian step, sigma half
-   the authored radius, scaled by the blur ramp) and write the sampled alpha as gradient
+   that grows along the blur axis. Model it as the blurred edge (a Gaussian step, sigma from
+   the radius rule in [`progressive-blur.md`](progressive-blur.md), scaled by the blur ramp) and write the sampled alpha as gradient
    stops. Do not paint the picker's stops.
 
 **Complete when:** the ledger row for the gradient lists the type, the transform-applied
@@ -296,7 +296,7 @@ the script divide by the capture's scale. Then walk a column:
 ```py
 from PIL import Image
 
-image = Image.open("/tmp/current.png").convert("RGB")
+image = Image.open("<scratchpad>/figma-current.png").convert("RGB")
 scale = image.width / DESIGN_WIDTH   # capture width / design frame width
 column = int(31 * scale)             # clear of artwork and rounded corners
 A, B = (210, 233, 239), (247, 247, 247)

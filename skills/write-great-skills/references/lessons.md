@@ -1,7 +1,8 @@
 # Lessons behind the rules
 
-Distilled from pstack (poteto) and Matt Pocock's skills, and from building `mobile/ship-builds` and `general/figma-to-code`.
-Each lesson has the rule, why it holds, and a before-and-after from a real skill.
+Distilled from pstack (poteto) and Matt Pocock's skills, and from building `skills/ship-builds` and
+`skills/figma-to-code`. Each lesson has the rule, why it holds, and most have a before-and-after
+from a real skill.
 
 ## 1. Rules the agent must follow become scripts
 
@@ -16,11 +17,11 @@ The fix compared against the archive too. Test what the check compares, not only
 
 ## 2. Keep SKILL.md to what every run needs
 
-Everything in SKILL.md fills the agent's context on every run. Workflow skills in both collections
-run 30 to 110 lines.
+Everything in SKILL.md fills the agent's context on every run. Measure it with `wc -l SKILL.md`
+instead of trusting a remembered number; lint warns past 150 lines.
 
 - Before: 189 lines, including a first-run detection table, a config schema and a failure table.
-- After: 120 lines. First run, signing and troubleshooting moved to `references/`, the config
+- After: 138 lines. First run, signing and troubleshooting moved to `references/`, the config
   example to `assets/`.
 
 ## 3. Every step has a finish line
