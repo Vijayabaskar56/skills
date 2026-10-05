@@ -1,0 +1,60 @@
+<body>
+<div class="vbg-report" id="report">
+<div class="vbg-shell">
+  <a class="vbg-skip-link" href="#main">Skip to content</a>
+  <header class="vbg-header">
+    <div class="vbg-masthead">
+      <span class="vbg-identity"><span class="vbg-custom-identity">CLIENT<small>PRODUCT</small></span></span>
+      <div class="vbg-document-meta">
+        <span class="vbg-recipient">WHAT THE PAGE IS, IN FIVE WORDS</span>
+        <span class="vbg-date">Checked against the app as of D MONTH YYYY</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="vbg-opening">
+      <h1 class="vbg-title vbg-opening-claim">One-sentence claim the page proves.</h1>
+      <p class="vbg-lede vbg-opening-proof">Two or three plain sentences: what the table holds, in what order, and that a row opens for detail.</p>
+      <p class="vbg-meta vbg-custom-legend"><span aria-hidden="true">✅</span> MEANING &nbsp;·&nbsp; <span aria-hidden="true">⚠️</span> MEANING &nbsp;·&nbsp; <span aria-hidden="true">❌</span> MEANING</p>
+      <div class="vbg-cluster vbg-custom-actions">
+        <button class="vbg-button" type="button" id="expand-all">Expand all</button>
+        <button class="vbg-button" type="button" id="collapse-all">Collapse all</button>
+        <button class="vbg-button" type="button" id="copy-md">Copy as Markdown</button>
+        <span class="vbg-meta" id="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <!-- Optional: a .vbg-stat-strip with 3–4 .vbg-stat tiles, only when the numbers are the point. -->
+    </div>
+
+    <section class="vbg-section" id="table">
+      <div class="vbg-table-wrap"><table class="vbg-custom-disclosure" id="inventory">
+<thead><tr><th scope="col" class="vbg-custom-toggle-col"><span class="vbg-visually-hidden">Open</span></th><th scope="col">STATUS COLUMN NAME</th><th scope="col">Kind</th><th scope="col">Item</th><th scope="col">In one line</th></tr></thead>
+<tbody>
+
+<!-- One item = one summary row + one detail row. data-detail == detail id; ids are stable slugs (deep-linkable as #slug). -->
+<tr class="vbg-custom-row" data-detail="example-row"><td><button type="button" class="vbg-custom-toggle" aria-expanded="false" aria-controls="example-row"><span aria-hidden="true">▸</span><span class="vbg-visually-hidden">Toggle</span></button></td><td class="vbg-custom-status"><span aria-hidden="true">✅</span><span class="vbg-visually-hidden">Yes</span></td><td>KIND</td><td>Item name</td><td>The one line a skimmer needs — <code class="vbg-mono">/api/path</code> if there is one</td></tr>
+<tr class="vbg-custom-detail" id="example-row" hidden><td colspan="5">
+<p>Detail paragraphs. Nested tables are fine here:</p>
+<table>
+<thead><tr><th scope="col">Column</th><th scope="col" class="vbg-numeric">Value</th></tr></thead>
+<tbody><tr><td>Row</td><td class="vbg-numeric">30%</td></tr></tbody>
+</table>
+</td></tr>
+
+</tbody></table></div>
+    </section>
+
+    <section class="vbg-section" id="closing">
+      <div class="vbg-flow">
+        <h2 class="vbg-heading-20">Closing note heading</h2>
+        <p>One or two paragraphs. Link sibling documents with <a class="vbg-link" href="https://example.vercel.app/">a real URL</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="vbg-footer">
+    <p class="vbg-meta">CLIENT PRODUCT. Checked against the app as of D MONTH YYYY.</p>
+  </footer>
+</div>
+</div>
+</body>

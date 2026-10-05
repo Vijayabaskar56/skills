@@ -1,0 +1,15 @@
+{
+  "bundleId": { "ios": "com.example.app", "android": "com.example.app" },
+  "scheme": "myapp",
+  "deepLinks": "src/deep-links.ts",
+  "sectionParam": null,
+  "flowsDir": ".argent/flows",
+  "recordingsDir": ".argent/recordings",
+  "deadFlows": [],
+  "ios": {
+    "device": "iPhone 17",
+    "simulatorApp": "/Applications/Xcode-26.6.0.app/Contents/Developer/Applications/Simulator.app"
+  },
+  "android": { "avd": "Pixel_9a", "start": null, "stop": null },
+  "notes": "docs/verify-on-device.md"
+}

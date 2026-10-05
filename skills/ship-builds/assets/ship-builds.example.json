@@ -1,0 +1,17 @@
+{
+  "ios": {
+    "appId": "1234567890",
+    "bundleId": "com.example.app",
+    "workspace": "ios/App.xcworkspace",
+    "scheme": "App",
+    "infoPlist": "ios/App/Info.plist",
+    "version": "1.0.0",
+    "signing": "automatic",
+    "exportOptions": null,
+    "groups": [{ "id": "GROUP_ID", "name": "Designers", "external": true }]
+  },
+  "android": { "enabled": true, "artifact": "apk", "outputDir": "~/Downloads" },
+  "validate": "npm run validate",
+  "notes": { "review": "show-and-continue", "locale": "en-US" },
+  "tagPrefix": "testflight-"
+}

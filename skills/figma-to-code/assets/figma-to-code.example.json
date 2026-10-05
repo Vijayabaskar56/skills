@@ -1,0 +1,16 @@
+{
+  "platform": "react-native",
+  "figmaDownloadDir": "/absolute/path/allow-listed/in/figma",
+  "assetDir": "assets",
+  "tokenFile": "global.css",
+  "textComponent": "AppText",
+  "componentDirs": ["components"],
+  "validate": "npm run validate",
+  "verify": {
+    "tool": "argent",
+    "open": "myapp://<route>",
+    "device": "iPhone 17",
+    "viewport": null
+  },
+  "notes": "docs/figma-to-code.md"
+}
