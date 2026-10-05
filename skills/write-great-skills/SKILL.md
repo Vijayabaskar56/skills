@@ -138,8 +138,8 @@ account: the refusal you expect may not fire.
 
 - Write skills with straight quotes and no em or en dashes. Run `unslop` on the prose.
 - Ship a skill only after lint exits 0.
-- Install a shared skill from one source: a skills.sh install pinned to a commit
-  (`npx skills add owner/repo#<sha>`) or a symlink to one checkout. Never hand-copy a skill folder.
+- Install a shared skill from one source: a skills.sh install (`npx skills add owner/repo -g`,
+  with `#<sha>` only to freeze it) or a symlink to one checkout. Never hand-copy a skill folder.
 
 ## Report
 
