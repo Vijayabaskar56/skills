@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# agent-display: on-demand virtual display for headed chrome debugging.
+# Usage: agent-display [start [--vnc]|stop|status|chrome [chromium args...]]
+# Keeps the laptop headless-friendly: no display server runs until you need it.
+#
+#   agent-display start [--vnc]   start :99 (Xvfb, or Xtigervnc with VNC on 5999)
+#   agent-display stop            kill the virtual display
+#   agent-display status          show state
+#   agent-display chrome [...]    ensure display, then run headed chromium on it
+#
+# Remote viewing (when started with --vnc, localhost-only):
+#   ssh -L 5999:localhost:5999 <user>@<host>   # then point a VNC client at localhost:5999
+set -euo pipefail
+
+DISP=":99"
+GEOM="1920x1080x24"
+RFBPORT="5999"
+PROFILE="$HOME/.local/share/agent-display/chrome-profile"
+PIDFILE="$HOME/.local/share/agent-display/display.pid"
+MODEFILE="$HOME/.local/share/agent-display/display.mode"
+mkdir -p "$(dirname "$PIDFILE")" "$PROFILE"
+
+server_running() { pgrep -f "X(vfb|tigervnc) $DISP( |$)" >/dev/null 2>&1; }
+
+cmd_start() {
+  local mode="xvfb" vnc="no"
+  [[ "${1:-}" == "--vnc" ]] && { mode="vnc"; vnc="yes"; }
+  if server_running; then
+    echo "display $DISP already running (mode: $(cat "$MODEFILE" 2>/dev/null || echo ?)). export DISPLAY=$DISP"
+    return 0
+  fi
+  if [[ "$vnc" == "yes" ]]; then
+    # localhost-only, no password; reach it via SSH tunnel only.
+    Xtigervnc "$DISP" -geometry 1920x1080 -depth 24 -localhost yes \
+      -rfbport "$RFBPORT" -SecurityTypes None -AlwaysShared -nolisten tcp >/tmp/agent-display-vnc.log 2>&1 &
+  else
+    Xvfb "$DISP" -screen 0 "$GEOM" -nolisten tcp >/tmp/agent-display.log 2>&1 &
+  fi
+  echo $! > "$PIDFILE"; echo "$mode" > "$MODEFILE"
+  for _ in $(seq 1 30); do
+    [[ -S "/tmp/.X11-unix/X${DISP#:}" ]] && break
+    sleep 0.2
+  done
+  echo "display $DISP up (mode: $mode). use: export DISPLAY=$DISP"
+  if [[ "$vnc" == "yes" ]]; then
+    echo "vnc: ssh -L $RFBPORT:localhost:$RFBPORT <host>, then vnc://localhost:$RFBPORT"
+  fi
+}
+
+cmd_stop() {
+  pkill -f "X(vfb|tigervnc) $DISP( |$)" 2>/dev/null || true
+  rm -f "$PIDFILE" "$MODEFILE"
+  echo "display $DISP stopped"
+}
+
+cmd_status() {
+  if server_running; then
+    pgrep -af "X(vfb|tigervnc) $DISP( |$)" | head -n 3
+    echo "mode: $(cat "$MODEFILE" 2>/dev/null || echo ?). clients: export DISPLAY=$DISP"
+  else
+    echo "display $DISP stopped"
+  fi
+}
+
+# The real binary, not the distro launcher: the launcher adds the desktop's chromium-flags.conf
+# (Wayland, extensions, keyring), which this display does not want.
+chromium_bin() {
+  if [[ -n "${AGENT_DISPLAY_CHROMIUM:-}" ]]; then echo "$AGENT_DISPLAY_CHROMIUM"
+  elif [[ -x /usr/lib/chromium/chromium ]]; then echo /usr/lib/chromium/chromium
+  else command -v chromium; fi
+}
+
+cmd_chrome() {
+  server_running || cmd_start >/dev/null
+  DISPLAY="$DISP" exec "$(chromium_bin)" --ozone-platform=x11 --password-store=basic \
+    --user-data-dir="$PROFILE" --no-first-run \
+    --disable-dev-shm-usage --remote-debugging-port=9222 "$@"
+}
+
+case "${1:-status}" in
+  start) cmd_start "${2:-}" ;;
+  stop) cmd_stop ;;
+  status) cmd_status ;;
+  chrome) shift; cmd_chrome "$@" ;;
+  *) echo "usage: $0 [start [--vnc]|stop|status|chrome ...]" >&2; exit 1 ;;
+esac

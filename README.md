@@ -5,6 +5,7 @@ Agent skills by Vijayabaskar, for Claude Code, Codex, OpenCode and any agent
 
 | Skill | Use it for |
 | --- | --- |
+| `agent-display` | A headed browser or GUI app on a Linux host on demand, on a virtual display that stops after the task |
 | `btca` | Answering "how does library X work" from cloned source in `~/work/references` |
 | `create-lint-rule` | Adding a guardrail rule to the shadcn-x lint plugin |
 | `figma-to-code` | Building pixel-accurate React or React Native UI from a Figma node |
