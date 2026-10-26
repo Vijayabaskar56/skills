@@ -22,8 +22,8 @@ causes it. Decide the owner first:
 4. Keep the logo and the rim from the photo, except the rim next to the parts, which gets the
    plane times the rim's median shade.
 
-layer-lint `stationary-shadow` fails when the face beside the parts is still darker than the
-plane.
+layer-lint `stationary-shadow` fails when more of the face beside the parts than its
+`--dark-share` limit is darker than the plane by `--darken`.
 
 ## Build each shadow
 

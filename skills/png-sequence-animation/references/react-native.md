@@ -23,8 +23,9 @@
 Offer three modes on one rig: `motion` (tilt), `touch` (drag and tap) and `both`. Each feeds the
 same pendulums, so none needs its own physics:
 
-- **Motion.** Read `useAnimatedSensor(SensorType.ACCELEROMETER)` and `GYROSCOPE` with
-  `interval: "auto"` inside the frame callback. The accelerometer gives the down direction (smooth
+- **Motion.** Create `useAnimatedSensor(SensorType.ACCELEROMETER)` and `GYROSCOPE` with
+  `interval: "auto"` in the component body, and read only their `.sensor.value` inside the frame
+  callback. The accelerometer gives the down direction (smooth
   it, then let the hanging direction follow it slowly, and push the parts by the difference); the
   gyroscope's z rate adds a spin push. Android and iOS report acceleration with opposite signs;
   flip one with a `Platform.OS` constant. Treat a reading near zero as "no sensor" and fall back
@@ -88,5 +89,6 @@ part (each with its glint), then anything that passes in front of the parts, suc
 
 ## Readiness
 
-Expose a locator once the first layer has drawn (`onDisplay` or `onLoad`), on an accessible
+Expose a locator once the first layer has drawn (`onDisplay` on expo-image, `onLoad` on React
+Native's `Image`), on an accessible
 element, so tests and verification wait for it instead of sleeping.

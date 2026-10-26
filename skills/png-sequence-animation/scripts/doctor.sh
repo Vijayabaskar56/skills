@@ -32,7 +32,7 @@ else echo "missing ffmpeg brew install ffmpeg"; missing=1; fi
 
 objects="$(field '.objects // {} | keys[]')"
 if [ -n "${1:-}" ]; then
-  if [ -n "$objects" ] && ! grep -qx "$1" <<<"$objects"; then
+  if ! grep -qx "$1" <<<"$objects"; then
     echo "missing object $1 not in .objects; add it (references/first-run.md)"; missing=1; objects=""
   else objects="$1"; fi
 fi

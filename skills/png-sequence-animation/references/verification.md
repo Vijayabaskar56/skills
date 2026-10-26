@@ -38,4 +38,5 @@ marked area to a layer with the swing sheet.
 
 ## Clean up
 
-Delete recordings and frames this run made. Stop the simulator servers for the devices you used.
+Delete recordings and frames this run made. Stop the simulator servers this run started, scoped to its devices; leave ones that were already
+running alone.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Usage: swing-sim.py <rig.json> <out.png> [--layers <dir>] [--angles -18,-9,0,9,18] [--background 0.93]
+"""Usage: swing-sim.py <rig.json> <out.png> [--layers <dir>] [--angles=-18,-9,0,9,18] [--background 0.93]
 
 Poses the rig offline at each angle (every part turns by angle * its swing about its pivot,
 shadows ride their part and are clipped to their receiver) and tiles the frames side by side,

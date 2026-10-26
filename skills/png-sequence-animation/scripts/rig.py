@@ -65,8 +65,9 @@ def pose(layers, degrees):
         matrix = _matrix(named, layer, degrees)
         if not np.allclose(matrix, [[1, 0, 0], [0, 1, 0]]):
             height, width = alpha.shape
-            bgr = cv2.warpAffine(bgr, matrix, (width, height), flags=cv2.INTER_LINEAR)
+            premultiplied = cv2.warpAffine(bgr * alpha[..., None], matrix, (width, height), flags=cv2.INTER_LINEAR)
             alpha = cv2.warpAffine(alpha, matrix, (width, height), flags=cv2.INTER_LINEAR)
+            bgr = premultiplied / np.maximum(alpha, 1e-6)[..., None]
         moved[layer["name"]] = {**layer, "bgr": bgr, "alpha": alpha}
     posed = []
     for layer in layers:

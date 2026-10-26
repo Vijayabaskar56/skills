@@ -44,7 +44,7 @@ alpha_error = np.abs(coverage - source_alpha).mean()
 print(f"mean {mean:.2f}/255 p99 {p99:.1f}/255 alpha {alpha_error:.4f}")
 
 if args.heatmap:
-    heat = np.clip(error * 8, 0, 255).astype(np.uint8)
+    heat = np.clip(error * 8 * (source_alpha > 0), 0, 255).astype(np.uint8)
     cv2.imwrite(args.heatmap, cv2.applyColorMap(heat, cv2.COLORMAP_INFERNO))
     print(f"heatmap {args.heatmap}")
 

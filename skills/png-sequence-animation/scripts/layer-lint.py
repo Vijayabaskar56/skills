@@ -85,17 +85,19 @@ for surface in (layer for layer in layers if layer.get("receives")):
            f"{share:.1%} of the face beside the parts is darker than the fitted light (max {args.dark_share:.0%})")
 
 shadows = [layer for layer in layers if layer.get("role") == "shadow"]
-cast = np.zeros(layers[0]["alpha"].shape)
-for shadow in shadows:
-    cast = np.maximum(cast, shadow["alpha"])
-for part in parts if shadows else []:
+for part in parts:
+    own = [shadow for shadow in shadows if shadow.get("follows") == part["name"]]
+    if not own:
+        continue
     body = part["alpha"] > 0.5
     rows = np.nonzero(body.any(1))[0]
     lands = body.copy()
-    for shadow in shadows:
-        if shadow.get("follows") == part["name"] and "offset" in shadow:
+    cast = np.zeros(body.shape)
+    for shadow in own:
+        if "offset" in shadow:
             dx, dy = shadow["offset"]
             lands |= ndimage.shift(body, (dy, dx), order=0)
+        cast = np.maximum(cast, shadow["alpha"])
     under = ndimage.binary_dilation(lands, iterations=10)
     shaded = ((cast > 0.05) & under).any(1)
     share = float(shaded[rows].mean())

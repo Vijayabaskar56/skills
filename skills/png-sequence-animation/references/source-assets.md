@@ -17,7 +17,7 @@ small frame comes out small. Take the image fill itself:
    allow-listed download folder. It returns `rawImages`: every image fill under the node at its
    original size.
 2. Several may come back (an opaque original, a cutout, thumbnails). Pick the largest one with
-   alpha: check with `python -c "import cv2; print(cv2.imread(p, -1).shape)"`; a cutout has 4
+   alpha: check with `python -c "import cv2, sys; print(cv2.imread(sys.argv[1], -1).shape)" <image>`; a cutout has 4
    channels and a large transparent share.
 3. Record its path in `source`. Keep it outside the repo if it is a working file.
 

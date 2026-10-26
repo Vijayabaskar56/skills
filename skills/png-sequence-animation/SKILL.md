@@ -81,7 +81,7 @@ and a shadow taken from the photo is extended where the photo never showed one.
 ## 6. Simulate the swing offline
 
 ```bash
-$PY scripts/swing-sim.py <rig> <out>/swing.png --layers <out> --angles -18,-9,0,9,18
+$PY scripts/swing-sim.py <rig> <out>/swing.png --layers <out> --angles=-18,-9,0,9,18
 ```
 
 Open the sheet. Look for anything that stays put while its part moves, a hole where a hidden area

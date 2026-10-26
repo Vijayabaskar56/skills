@@ -13,5 +13,8 @@ mkdir -p "$dir/assets"
 shopt -s nullglob
 layers=("$assets"/*.png)
 [ ${#layers[@]} -eq 0 ] || cp "${layers[@]}" "$dir/assets/"
-for file in "$@"; do cp "$file" "$dir/"; done
+for file in "$@"; do
+  [ ! -e "$dir/$(basename "$file")" ] || { echo "two files named $(basename "$file"); back them up separately" >&2; exit 1; }
+  cp "$file" "$dir/"
+done
 echo "$dir"
