@@ -1,0 +1,15 @@
+{
+  "python": "/absolute/path/to/venv/bin/python",
+  "validate": "npm run validate",
+  "objects": {
+    "<object>": {
+      "source": "/absolute/path/to/source-with-alpha.png",
+      "extract": "tools/<object>/extract-layers.py",
+      "assetDir": "assets/images/<object>",
+      "rig": "tools/<object>/rig.json",
+      "component": "components/<object>/<object>.tsx",
+      "deepLink": "myapp://playground/<object>",
+      "notes": "docs/<object>-layers.md"
+    }
+  }
+}

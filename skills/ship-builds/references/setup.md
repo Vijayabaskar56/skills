@@ -41,6 +41,20 @@ chmod 600 /path/to/AuthKey_XXX.p8
 asc auth login --name <profile> --key-id <KEY_ID> --issuer-id <ISSUER_ID> --private-key /path/to/AuthKey_XXX.p8
 ```
 
+## eas-cli
+
+`npm i -g eas-cli`, or add it to the repo's devDependencies so `npx --no-install eas-cli` finds it.
+
+## expo-updates
+
+The app has no OTA support: `npx expo install expo-updates`, then `npx eas-cli update:configure`.
+That is a native change, so the next build carries it and only builds after it can take an OTA.
+
+## eas-login
+
+The user logs in: suggest `! npx eas-cli login` so the prompt runs in the session. Check the
+account with `npx eas-cli whoami`; it must reach the project's `owner`.
+
 ## java
 
 `brew install --cask zulu@17`

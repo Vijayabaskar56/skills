@@ -1,0 +1,11 @@
+{
+  "canvas": [1088, 1445],
+  "layers": [
+    { "name": "tag", "file": "tag.png", "role": "surface", "receives": true },
+    { "name": "back-key-shadow", "file": "back-key-shadow.png", "role": "shadow", "follows": "back-key", "clip": "tag", "offset": [-70, 110] },
+    { "name": "front-key-shadow", "file": "front-key-shadow.png", "role": "shadow", "follows": "front-key", "clip": "tag", "offset": [-70, 110] },
+    { "name": "back-key", "file": "back-key.png", "role": "part", "pivot": [738, 506], "swing": 1, "neutral": true },
+    { "name": "front-key", "file": "front-key.png", "role": "part", "pivot": [698, 476], "swing": -1, "neutral": true },
+    { "name": "ring", "file": "ring.png", "role": "surface" }
+  ]
+}

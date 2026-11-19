@@ -11,6 +11,8 @@ Agent skills by Vijayabaskar, for Claude Code, Codex, OpenCode and any agent
 | `figma-to-code` | Building pixel-accurate React or React Native UI from a Figma node |
 | `html-report` | One-table HTML reports for clients and other teams, with a Markdown mirror |
 | `perf-review` | Ranking the likely causes of a React or React Native performance regression |
+| `perf-check` | Benchmarking a screen's open and scroll frames on an Android phone against a baseline, with trace triage |
+| `png-sequence-animation` | Splitting a photo into PNG layers that swing or move on their own, with shadows and reflections that follow the parts |
 | `ship-builds` | Local iOS TestFlight and Android APK builds for testers |
 | `verify-on-device` | Checking a React Native change on a simulator with argent |
 | `write-great-skills` | Writing, restructuring and linting agent skills |
