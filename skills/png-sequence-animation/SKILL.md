@@ -1,6 +1,6 @@
 ---
 name: png-sequence-animation
-description: Use when splitting a photo into PNG layers that move on their own (swing, dangle, drag, tilt), or when such layers look fake in motion: a shadow left behind, a neighbour's colour on a moving part, half a shadow, smudges, choppy or stray edges. Extracts layers from real pixels, moves light off moving parts, rigs them in React Native with touch, gyro and haptics, and proves it offline and on device. Not for static Figma builds; use figma-to-code.
+description: "Use when splitting a photo into PNG layers that move on their own (swing, dangle, drag, tilt), or when such layers look fake in motion: a shadow left behind, a neighbour's colour on a moving part, half a shadow, smudges, choppy or stray edges. Extracts layers from real pixels, moves light off moving parts, rigs them in React Native with touch, gyro and haptics, and proves it offline and on device. Not for static Figma builds; use figma-to-code."
 argument-hint: "the source photo or Figma node, or the defect the user saw"
 ---
 
