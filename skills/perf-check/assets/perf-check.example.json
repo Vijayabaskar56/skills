@@ -1,0 +1,47 @@
+{
+  "android": {
+    "package": "com.example.app",
+    "serial": "",
+    "home": "example://",
+    "settleSeconds": 8
+  },
+  "release": {
+    "build": "cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a",
+    "apk": "android/app/build/outputs/apk/release/app-release.apk",
+    "debugApk": "android/app/build/outputs/apk/debug/app-debug.apk"
+  },
+  "screens": [
+    {
+      "name": "item",
+      "open": "example://item/{id}",
+      "ids": [
+        "12",
+        "34",
+        "56"
+      ],
+      "rounds": 2,
+      "scroll": true
+    }
+  ],
+  "interactions": [
+    {
+      "name": "open-account",
+      "before": [
+        {
+          "link": "example://"
+        }
+      ],
+      "expect": "btn_open_account",
+      "tap": "btn_open_account",
+      "rounds": 8,
+      "slideMs": 500
+    }
+  ],
+  "baseline": ".perf-check/android-baseline.json",
+  "thresholds": {
+    "pct": 20,
+    "absMs": 5,
+    "absPts": 1.5
+  },
+  "notes": "docs/perf-check.md"
+}
