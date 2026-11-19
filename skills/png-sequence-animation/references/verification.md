@@ -17,6 +17,10 @@ what layered motion needs.
 Take a full resolution `screenshot` (scale 1) and crop to the object. The image returned after an
 action is scaled down and hides fringes and smudges.
 
+On Android, also capture it after a cold launch (force-stop, then open the deep link), and check
+that every masked layer is there: a mask that snapshots before its image loads hides its content
+on Android only (`react-native.md`, Masks).
+
 ## Look in motion
 
 A swing settles in about a second. Record and tile:

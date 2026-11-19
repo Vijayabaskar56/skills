@@ -82,6 +82,31 @@ Give the mask element an explicit box: React Native `Image` with the scaled canv
 height and `resizeMode="stretch"`. To debug a mask, give the masked children a solid colour: no
 colour means the mask is wrong, colour in the wrong place means the content is.
 
+On Android the masked view snapshots its mask element once, when it attaches or its size changes,
+then hides the mask view. A mask image still loading at that moment snapshots empty, and the
+masked content never draws: a hidden view does not report the image arriving later. iOS masks
+live and never shows it. Keep the masked view keyed on the mask image's `onLoad`, so it remounts
+once the image has loaded and snapshots it:
+
+```tsx
+const [maskLoaded, setMaskLoaded] = useState(false);
+<MaskedView
+  key={maskLoaded ? "mask-loaded" : "mask-loading"}
+  androidRenderingMode="hardware"
+  maskElement={
+    <Image
+      source={LAYERS.window}
+      style={box.size}
+      resizeMode="stretch"
+      onLoad={maskLoaded ? undefined : () => setMaskLoaded(true)}
+    />
+  }
+>
+```
+
+It is a race, so it can look fine on one launch and empty on the next. Check every masked layer
+on Android after a cold launch, not after Fast Refresh.
+
 ## Draw order
 
 Back to front, as in the rig: surface, shadows (masked by the surface), the back part, the front

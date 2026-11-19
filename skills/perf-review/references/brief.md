@@ -75,6 +75,12 @@ Report only what the range added or made worse. For each class, the React Native
    - Web: an `iframe` embed, `<video preload="auto">`, or map library initialised in a hidden tab,
      closed dialog or below the fold without lazy loading.
    - Seen: web document sheets warmed up 1.4 s after every page open, before anyone opened one.
+   - Check every "wait until the screen settles" gate the range adds or uses: a screen can report
+     settled on the frame it mounts, before its open animation starts
+     (react-native-screen-transitions: `settled === 1` until the animation flips it), so the
+     deferred work runs during the slide. The gate must see the screen move first.
+   - Seen: a dashboard's eight below-the-fold sections, two live maps among them, mounted one per
+     three frames during its 400 ms open slide, because the reveal waited on `settled` alone.
 6. **Animations during transitions, or looping forever.**
    - RN: `withRepeat(..., -1)`, Lottie `loop`, count-ups or digit rolls, animations that start
      while a screen transition, sheet open or map flight is running, animations keyed on unstable
@@ -100,6 +106,16 @@ Report only what the range added or made worse. For each class, the React Native
    formatting, JSON parsing, building large arrays; `onLayout` that sets state and re-lays out.
 10. **Undone earlier perf fixes.** A change that reverts, bypasses or duplicates around one of the
     perf commits listed above.
+11. **Work in the same handler as a navigation.** A press handler that writes shared state and then
+    navigates: the new state re-renders the destination (or a screen kept mounted under the one
+    leaving) before the navigation can commit, so nothing moves until that render ends, and its
+    follow-ups (a camera flight, a list rebuild) run during the transition.
+    - RN: a store or filter setter, `setParams` or an event emitter called beside `navigate`,
+      `goBack` or `pop`; a listener on the destination that animates a map or scrolls on that event.
+    - Web: a global store update or route-state write in the click handler of a link.
+    - Seen: tapping a saved search applied its filters and flew the map camera in the same tick as
+      the pop, freezing the screen 250 ms before the slide and dropping frames during it. The fix
+      handed the change to the map to apply once the screen above it had closed.
 
 ## Severity and reach
 

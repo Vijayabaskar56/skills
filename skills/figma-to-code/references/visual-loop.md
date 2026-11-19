@@ -42,8 +42,10 @@ already believe it matches. Hand the judgement to an agent that sees only the tw
 this skill authorises the spawn.
 
 Spawn one critic per comparison, with `subagent_type: "figma-critic"` and no `model` override. The
-agent definition (`assets/figma-critic.md`, installed per `setup.md`) carries the brief, so your
-prompt supplies only the case:
+critic runs on Sonnet, pinned in its agent definition: it judges two images and needs nothing
+stronger, so never pass `model: "opus"` (or any other model) to it. The agent definition
+(`assets/figma-critic.md`, installed per `setup.md`) carries the brief, so your prompt supplies
+only the case:
 
 1. the Figma file key and node id, so it fetches the render itself;
 2. the absolute path to the capture, to open with `Read`;

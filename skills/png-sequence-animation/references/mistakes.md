@@ -119,6 +119,11 @@ object's, as an example of scale.
   design. Rule: the rest frame must recompose to the source; invent nothing that shows at rest.
 - **Clip at rest.** `rig.py` clipped a moving layer with its clip layer as drawn at rest, so a
   window riding the bell stayed put offline. The pose now clips with the posed layer.
+- **No clapper on Android.** "in the bell the ding is missing": iOS showed the clapper, Android
+  drew the bell with an empty mouth. Cause: the Android masked view snapshots its mask once and
+  hides it; the window image was still loading, so the snapshot was empty, and the hidden view
+  never reported the image arriving. Rule: key the masked view on the mask image's `onLoad`
+  (`react-native.md`), and check masked layers on Android after a cold launch.
 - **Scratch files blocked install.** `compare-layers.sh` failed on the heatmap and sheet left in
   the output directory, and `backup-layers.sh` failed on an asset folder with no PNG yet. Both
   now handle it.

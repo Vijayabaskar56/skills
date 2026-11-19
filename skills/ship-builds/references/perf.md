@@ -4,6 +4,22 @@ Step 3 profiles a fixed set of argent flows on the iOS simulator, reduces each r
 numbers, and compares the medians with the last shipped build. It is scripted end to end through
 the argent CLI (`argent run <tool> --json` and `argent flow run`), so no MCP session is needed.
 
+## Run the check (SKILL.md step 3)
+
+With Metro running and the dev build on the simulator:
+
+```bash
+scripts/perf-measure.sh <scratch>/perf-current.json
+scripts/perf-compare.mjs <perf.baseline> <scratch>/perf-current.json <perf.thresholdPct>
+```
+
+- If `perf.baseline` does not exist, skip compare: copy `perf-current.json` to `perf.baseline`,
+  report "first baseline" and continue.
+- If measure exits 2 because a build is busy, wait and rerun. If Metro, a simulator or argent is
+  missing, say so, then ask to start it or skip (`perf.whenUnavailable: ask`, the default) or skip.
+- If compare exits 1, stop the run and show its table. Ship anyway only when the user says so for
+  this build.
+
 ## Config
 
 The step runs only when `.ship-builds.json` has this block:

@@ -7,12 +7,30 @@
     "project": "ios/App.xcodeproj",
     "target": "App",
     "infoPlist": "ios/App/Info.plist",
+    "account": { "team": "TEAMID1234", "name": "Example Ltd" },
+    "prebuildEnv": null,
     "version": "1.0.0",
     "signing": "automatic",
     "exportOptions": null,
     "groups": [{ "id": "GROUP_ID", "name": "Designers", "external": true }]
   },
-  "android": { "enabled": true, "artifact": "apk", "outputDir": "~/Downloads" },
+  "android": {
+    "enabled": true,
+    "builder": "local",
+    "artifact": "apk",
+    "outputDir": "~/Downloads",
+    "eas": { "owner": "example-org", "project": "example-app", "profile": "production", "autoSubmit": true }
+  },
+  "ota": {
+    "channel": "production",
+    "environment": "production",
+    "env": { "APP_VARIANT": "production" },
+    "updatesUrl": "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    "publish": null,
+    "sentry": null,
+    "sentryOrg": "example-org",
+    "sentryProject": "example-app"
+  },
   "validate": "npm run validate",
   "notes": { "review": "show-and-continue", "locale": "en-US" },
   "tagPrefix": "testflight-"

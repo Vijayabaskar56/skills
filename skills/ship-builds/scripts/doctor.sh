@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: doctor.sh [ios|android|both]
+# Usage: doctor.sh [ios|android|both|ota]
 # From the app's repo root. Prints one line per dependency: "ok <name> <version>",
 # "missing <name>" with its section in references/setup.md, or "session <name> ..." for what only
 # the agent can confirm. Exits 1 when anything the chosen platforms need is missing.
@@ -22,6 +22,20 @@ report() {
 report git "git --version"
 report node "node -v"
 report jq "jq --version"
+
+if [ "$platform" = ota ]; then
+  report curl "curl --version"
+  report eas-cli "npx --no-install eas-cli --version 2>/dev/null || eas --version"
+  if grep -q '"expo-updates"' package.json 2>/dev/null; then echo "ok expo-updates in package.json"
+  else echo "missing expo-updates, see references/setup.md#expo-updates"; missing=1; fi
+  if npx --no-install eas-cli whoami >/dev/null 2>&1; then echo "ok eas-login $(npx --no-install eas-cli whoami 2>/dev/null | head -1)"
+  else echo "missing eas-login, see references/setup.md#eas-login"; missing=1; fi
+  if grep -q '"@sentry/react-native"' package.json 2>/dev/null; then
+    if [ -n "${SENTRY_AUTH_TOKEN:-}" ] || grep -qsE '^SENTRY_AUTH_TOKEN=.+' .env.local .env; then echo "ok sentry-token set"
+    else echo "optional sentry-token not set; references/ota.md step 3 asks whether to set up source maps"; fi
+  fi
+  exit "$missing"
+fi
 
 if [ "$platform" = ios ] || [ "$platform" = both ]; then
   report xcode "xcodebuild -version"
