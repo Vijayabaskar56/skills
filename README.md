@@ -9,7 +9,9 @@ Agent skills by Vijayabaskar, for Claude Code, Codex, OpenCode and any agent
 | `btca` | Answering "how does library X work" from cloned source in `~/work/references` |
 | `create-lint-rule` | Adding a guardrail rule to the shadcn-x lint plugin |
 | `figma-to-code` | Building pixel-accurate React or React Native UI from a Figma node |
+| `legend-list-best-practices` | Building and fixing Legend List lists by the library's own contracts: virtualization, recycling, measurement |
 | `html-report` | One-table HTML reports for clients and other teams, with a Markdown mirror |
+| `no-use-effect` | Replacing `useEffect` with derived state, event handlers and data-fetching libraries |
 | `perf-review` | Ranking the likely causes of a React or React Native performance regression |
 | `perf-check` | Benchmarking a screen's open and scroll frames on an Android phone against a baseline, with trace triage |
 | `png-sequence-animation` | Splitting a photo into PNG layers that swing or move on their own, with shadows and reflections that follow the parts |
