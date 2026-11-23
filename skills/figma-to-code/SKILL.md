@@ -70,6 +70,7 @@ calls for:
 | a gradient fill | `references/gradients.md` |
 | a type or divider audit | `references/typography-pass.md` |
 | shadows, rings or blur washes | `references/shadow-pass.md` |
+| an icon alone in a circle, square or pill, or beside text in a row, list or chip | `references/optical-alignment.md` |
 
 For every text descendant, match its node id in `get_design_context` and record family, weight,
 size, line height, tracking, alignment, colour, width, wrapping, truncation and line count. Check
@@ -118,7 +119,9 @@ Run the config's `validate` command. For platform-sensitive effects, repeat "Clo
 
 ## Hard rules
 
-- Re-fetch the node before every fix and change values only from what it returns.
+- Re-fetch the node before every fix and change values only from what it returns. The one
+  measured exception is an optical nudge from `references/optical-alignment.md`, recorded in the
+  ledger.
 - Take blur type, radii, gradient stops and image transforms from the raw read, never from
   generated CSS.
 - Resolve colours, font weights and shadow slots by exact value. With no exact match, add a token

@@ -23,7 +23,7 @@ check_optional() {
 
 check node "node -v" "install Node 18+ (nvm, mise or brew install node)"
 check python3 "python3 --version" "xcode-select --install, or brew install python"
-check pillow "python3 -c 'import PIL; print(\"Pillow\", PIL.__version__)'" "python3 -m pip install Pillow (image-asset and gradient pixel checks)"
+check pillow "python3 -c 'import PIL; print(\"Pillow\", PIL.__version__)'" "python3 -m pip install Pillow (image-asset, gradient and optical-alignment checks)"
 check ffmpeg "ffmpeg -version" "brew install ffmpeg"
 check ffprobe "ffprobe -version" "brew install ffmpeg"
 

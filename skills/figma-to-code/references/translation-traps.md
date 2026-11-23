@@ -22,6 +22,9 @@ Each trap shipped at least once. Read the neutral list, then the section for con
 - **Nested radii are concentric.** An inner surface inset by `p` inside an outer radius `R` takes
   radius `R - p`, not the outer value. Figma often authors it that way; copying the outer radius
   makes the inner corners look fat.
+- **Box-centred is not optically centred.** An edit, trash or play icon centred by its frame in a
+  round button reads off-centre because its ink weighs to one side. Measure and nudge it with
+  `optical-alignment.md`, unless Figma already offsets it.
 - **Design width is not screen width.** A 380-unit element stays 380 on a 402-unit screen unless
   the design specifies proportional sizing.
 - **Fixed artwork stages can starve content.** Keep the design maximum while letting the stage
@@ -70,6 +73,13 @@ Each trap shipped at least once. Read the neutral list, then the section for con
   the radius value.
 - **Corner smoothing on iOS is `borderCurve: 'continuous'`.** Android ignores it and draws a
   circular arc.
+- **A lineHeight equal to the font size draws the text high on iOS.** A `leading-[15px]` on 15px
+  text (or `lineHeight: 15`) puts the glyphs about 1pt above where the same text sits with the
+  default leading. A label beside an icon then reads high against the icon, and its baseline
+  misses the value text on the same row. Figma's "auto" or 100% line height does not mean set
+  `lineHeight` to the size: drop it in a single-line row whose height comes from the icon or the
+  row. `row-align.py` in `optical-alignment.md` measures it. Android floors tight line heights
+  differently, so check it there separately.
 
 ## Web (React)
 
