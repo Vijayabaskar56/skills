@@ -90,7 +90,9 @@ Take icons from the node: export the vector (`get_design_context` asset or remot
 `download_assets`) and render it as SVG at the authored frame size. Do not substitute a library
 glyph or a placeholder while the node has one. Record the icon's frame size and the glyph's size
 separately; a 24pt frame holding an 18pt glyph is two values, not one. Only when Figma has no icon
-for a slot, say so and use a placeholder.
+for a slot, say so and use a placeholder. For a glyph alone in a symmetric container, also record
+whether Figma offsets it from the centre and, after the visual loop, its measured weight and
+nudge (`optical-alignment.md`).
 
 ## React Native
 
