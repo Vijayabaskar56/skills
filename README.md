@@ -15,7 +15,7 @@ Agent skills by Vijayabaskar, for Claude Code, Codex, OpenCode and any agent
 | `full-send` | Taking a change to a merged PR unattended: prove, review, file, babysit, merge |
 | `full-stop` | The full-send flow, stopping with the PR ready for you to merge |
 | `html-report` | One-table HTML reports for clients and other teams, with a Markdown mirror |
-| `leaving-pr-comments` | Marking and writing GitHub comments an agent posts for you |
+| `leaving-pr-comments` | Writing GitHub comments an agent posts for you, in your voice |
 | `legend-list-best-practices` | Building and fixing Legend List lists by the library's own contracts: virtualization, recycling, measurement |
 | `modernize` | Rebasing an old PR and deciding whether it should still exist |
 | `no-use-effect` | Replacing `useEffect` with derived state, event handlers and data-fetching libraries |
