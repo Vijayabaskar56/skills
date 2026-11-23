@@ -34,7 +34,8 @@ fleet upload-file clip-before.mp4 clip-after.mp4          # prints one markdown 
 
 `fleet upload-file` shrinks videos with ffmpeg (H.264, 720p, ready to stream) and compresses PNGs,
 then uploads them to the file-drop Worker. It prints images as `![name](url)` and videos as
-`[name](url)`.
+`[name](url)`. Pass `--before-label "Before: <what is wrong>" --after-label "After: <what is
+fixed>"` to set the table's alt text, and `--raw` to upload a file without shrinking it.
 
 - GitHub shows outside images inline only under 5 MB. If an image is larger, crop or scale it.
 - GitHub never embeds an outside video, so clips are links. Put each one under its screenshot.
