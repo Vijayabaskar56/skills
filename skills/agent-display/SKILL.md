@@ -49,6 +49,10 @@ Playwright and raw DevTools. For a GUI app other than the browser, run it with `
 stop it yourself when done. If the user asked to watch, give them the tunnel command from
 `references/drivers.md`.
 
+If you hand the driving to a subagent, give it the mid tier (Sonnet in Claude Code), not the
+cheapest: it must read the page after each action and recover from missed clicks and dialogs.
+Pass it the `cdp` line and the owner token, and keep step 5 in your own session.
+
 **Done when** the task's own check passes (the page state, the file, the screenshot).
 
 ## 5. Stop what you started
@@ -73,4 +77,5 @@ running. Use `scripts/close.sh --force` only when the user asks to clear everyth
 - Why the task needed a window (step 1), or that it stayed headless
 - The `display`, `chrome` and `owner` lines open.sh printed
 - The temperature before the run and after close.sh
+- Who drove the browser: this session, or a subagent and its tier
 - close.sh's last line
