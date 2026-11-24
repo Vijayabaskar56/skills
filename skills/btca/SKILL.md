@@ -6,8 +6,8 @@ argument-hint: "library name and the question about its source"
 
 # btca
 
-Answers source questions by sending a cheap read-only subagent into one cloned repo in the
-references dir. The main context reads only the subagent's answer, never the source files.
+Answers source questions by sending a read-only subagent into one cloned repo in the references
+dir. The main context reads only the subagent's answer, never the source files.
 
 The references dir is `$BTCA_REFERENCES_DIR`, default `~/work/references`. The scripts resolve
 it; take the path from their output instead of typing it.
@@ -15,8 +15,8 @@ it; take the path from their output instead of typing it.
 ## 0. Check setup
 
 Run `scripts/doctor.sh`. Fix each `missing` line as it says, asking before creating a folder, and
-confirm each `session` line yourself: a read-only search subagent (Explore in Claude Code) and the
-cheapest available model for it (haiku in Claude Code).
+confirm the `session` line yourself: a read-only search subagent can be dispatched (Explore in
+Claude Code).
 
 **Done when** doctor exits 0 and prints the references dir.
 
@@ -50,19 +50,28 @@ Build the prompt from:
 - Breadth: "medium" for a few files, "very thorough" for a sweep across areas and naming
   conventions.
 
+Pick the model tier from the question:
+
+| Question | Tier |
+| --- | --- |
+| Where something lives: a list of files, call sites or yes/no | cheapest (Haiku in Claude Code) |
+| How something works: an explanation that traces code across files | mid (Sonnet in Claude Code) |
+
+Pick the most expensive tier (Fable in Claude Code) only when the user asks for it.
+
 **Done when** the prompt contains the absolute path, the question, the citation request, the cap
-and the breadth.
+and the breadth, and you have picked a tier.
 
 ## 4. Dispatch the subagent
 
-Dispatch the read-only search subagent (Explore in Claude Code) with the cheapest available model
-(haiku in Claude Code) and the prompt from step 3. Example:
+Dispatch the read-only search subagent (Explore in Claude Code) with the tier and prompt from
+step 3. Example:
 
 ```
 Agent({
   description: "plate slash menu source dive",
   subagent_type: "Explore",
-  model: "haiku",
+  model: "sonnet",
   prompt: "Search only inside <absolute path from resolve-ref.sh>. Read no file outside it.
     Question: how is the slash command menu implemented? Cover trigger detection, the menu
     component and how items are registered. Cite path:line for each point. Under 400 words.
@@ -75,8 +84,8 @@ Agent({
 ## 5. Relay the answer
 
 Relay the answer and quote its `path:line` references verbatim so they stay clickable. For a
-follow-up that needs more depth, dispatch again with a refined prompt instead of reading the
-source yourself.
+follow-up that needs more depth, dispatch again with a refined prompt, one tier up if the first
+answer was thin, instead of reading the source yourself.
 
 **Done when** the reply quotes at least one `path:line` from the subagent.
 
@@ -93,4 +102,5 @@ source yourself.
 - Repo path printed by `resolve-ref.sh`
 - Commit read: `git -C <path> rev-parse --short HEAD`
 - Whether the repo was cloned or pulled this run, and the user's yes that allowed it
+- The model tier used and why
 - The subagent's `path:line` list, verbatim

@@ -16,7 +16,9 @@ if [[ "$(uname -s)" != "Linux" ]]; then
   echo "missing  linux: agent-display runs on a Linux host; here, drive the browser headless"
   exit 1
 fi
-need agent-display agent-display "see references/setup.md"
+if command -v agent-display >/dev/null 2>&1; then echo "ok       agent-display"
+elif [[ -x "$(dirname "$0")/agent-display" ]]; then echo "ok       agent-display (bundled; link it onto PATH per references/setup.md)"
+else echo "missing  agent-display: see references/setup.md"; missing=1; fi
 need Xvfb Xvfb "install xorg-server-xvfb (Arch) or xvfb (Debian)"
 need chromium chromium "install chromium"
 need curl curl "install curl"

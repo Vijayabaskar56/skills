@@ -21,5 +21,4 @@ else
 fi
 
 echo "session subagent confirm a read-only search subagent can be dispatched (Explore in Claude Code)"
-echo "session model confirm the cheapest available model for that subagent (haiku in Claude Code)"
 exit "$missing"

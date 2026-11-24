@@ -9,7 +9,6 @@ Agent skills by Vijayabaskar, for Claude Code, Codex, OpenCode and any agent
 | `babysit-pr` | Watching a PR through CI and review bots with one watcher, and fixing the real findings |
 | `btca` | Answering "how does library X work" from cloned source in `~/work/references` |
 | `council` | Read-only review from three models on three providers, looped until they agree |
-| `create-lint-rule` | Adding a guardrail rule to the shadcn-x lint plugin |
 | `figma-to-code` | Building pixel-accurate React or React Native UI from a Figma node |
 | `file-pr` | Filing a short, problem-first PR with before and after evidence from `fleet upload-file` |
 | `full-send` | Taking a change to a merged PR unattended: prove, review, file, babysit, merge |
