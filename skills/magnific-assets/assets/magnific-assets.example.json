@@ -1,0 +1,11 @@
+{
+  "project": { "name": "", "reference": "" },
+  "assetDir": "assets/images/illustrations",
+  "workDir": "/tmp/magnific-assets",
+  "displaySize": "211x200",
+  "sizeBudgetKB": 300,
+  "fps": 12,
+  "stillSuffix": "-still.webp",
+  "stillIsArt": false,
+  "notes": "docs/magnific-assets.md"
+}
