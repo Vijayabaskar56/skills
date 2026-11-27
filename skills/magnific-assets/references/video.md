@@ -86,8 +86,8 @@ it with `audit.py --protect` on the regions that must not change.
 ## Size
 
 On one 633 px scene, dropping `encode.sh --qalpha` from 90 to 50 took the AVIF from 712 KB to
-384 KB with no visible loss: the alpha plane's quality is often the bigger lever than `--quality`. Fewer frames
-(`--range` step 3 at 12 fps) is the next one.
+384 KB with no visible loss: the alpha plane's quality is often the bigger lever than `--quality`. Keep 24 fps: dropping frames saves size but makes travelling motion step
+(see "Frame rate" in mistakes.md).
 
 ## Numbers to read
 

@@ -13,7 +13,7 @@ Options:
   --threshold T         motion std that counts as moving (default 3; 5 drops faint jitter)
   --alpha-min A         art alpha a moving pixel needs (default 200; 40 for smoke, soft edges)
   --box x0,y0,x1,y1     keep motion inside this art-pixel box
-  --fps F               output frame rate (default 12)
+  --fps F               output frame rate (default 24, the clip's own rate)
   --once                play the action once from clip frame 0 instead of a crossfaded loop
 """
 import argparse
@@ -39,7 +39,7 @@ p.add_argument("--end", type=int, default=120)
 p.add_argument("--threshold", type=float, default=3.0)
 p.add_argument("--alpha-min", type=int, default=200)
 p.add_argument("--box", type=lambda s: [int(v) for v in s.split(",")])
-p.add_argument("--fps", type=int, default=12)
+p.add_argument("--fps", type=int, default=24)
 p.add_argument("--once", action="store_true")
 a = p.parse_args()
 start = a.start if a.start is not None else (0 if a.once else 36)

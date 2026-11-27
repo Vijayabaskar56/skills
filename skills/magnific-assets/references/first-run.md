@@ -10,7 +10,7 @@ Detect what you can from the repo; ask only for the rest, in one round.
 | `workDir` | Scratch folder for start images, clips and frames | Default `/tmp/magnific-assets`; outside the repo |
 | `displaySize` | The box, in points, the app draws the asset in, as `"WxH"` (for example `"211x200"`) | Read the component that renders the art; ask if it varies, and use the smallest place it appears |
 | `sizeBudgetKB` | Largest AVIF the project accepts | Ask; 300 if the project has no rule |
-| `fps` | Loop frame rate | 12 unless the project already ships another rate |
+| `fps` | Loop frame rate | 24, the clip's own rate. Never below 24 for motion that travels; see "Frame rate" in mistakes.md |
 | `stillSuffix` | Name of the still next to the AVIF | Default `-still.webp` |
 | `stillIsArt` | true when the app shows the original art (not the AVIF's frame 0) before the loop loads | Read how the app renders the art; passes `--still-is-art` to audit |
 | `notes` | Repo file with prose facts: how art is wired in code, platform limits, past decisions | Create `docs/magnific-assets.md` if none exists |

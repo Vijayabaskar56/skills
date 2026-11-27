@@ -43,6 +43,12 @@ Each of these cost a round on a real run. Read before the first generation.
 
 ## Building
 
+- **Frame rate.** Build and encode at 24 fps, the clip's own rate. At 12 fps every loop in one
+  app stepped visibly, and a gate swinging 84 degrees jumped several pixels a frame at its tip.
+  To save size, lower `--qalpha` first; never halve the frame rate of motion that travels.
+- **A part redrawn from the art breaks where something stood in front of it.** A pole crossing a
+  barrier boom left a gap in the boom once it rose. Fill the hidden stretch by repeating the
+  part's own pattern from one period away, then look at a zoomed frame of the moved pose.
 - **A white background makes a poor key.** White edges and highlights vanish with it, which
   shows as notches on dark mode. Use the green start image when the moving part is cut from the
   clip.

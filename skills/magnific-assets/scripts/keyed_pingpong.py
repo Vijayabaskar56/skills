@@ -33,7 +33,7 @@ p.add_argument("out", type=Path)
 p.add_argument("--last", type=int, default=12)
 p.add_argument("--swing", type=float, default=1.6)
 p.add_argument("--rest", type=float, default=1.2)
-p.add_argument("--fps", type=int, default=12)
+p.add_argument("--fps", type=int, default=24)
 a = p.parse_args()
 
 src = np.asarray(Image.open(a.art).convert("RGBA")).astype(float)

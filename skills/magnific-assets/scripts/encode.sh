@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: encode.sh <frames dir> <out dir> <name> [--once] [--fps 12] [--quality 60] [--qalpha 90] [--still-lossless]
+# Usage: encode.sh <frames dir> <out dir> <name> [--once] [--fps 24] [--quality 60] [--qalpha 90] [--still-lossless]
 #
 # Encodes fNNN.png frames into <out>/<name>.avif (loops forever, or plays once and holds the last
 # frame with --once), <out>/<name>-still.webp (the AVIF's own decoded frame 0 as WebP q90: close to
@@ -10,7 +10,7 @@ set -euo pipefail
 
 [[ $# -ge 3 ]] || { sed -n '2,8p' "$0"; exit 2; }
 frames=$1 out=$2 name=$3; shift 3
-fps=12 quality=60 qalpha=90 repeat=infinite still_opts="quality=90"
+fps=24 quality=60 qalpha=90 repeat=infinite still_opts="quality=90"
 while [[ $# -gt 0 ]]; do
   case $1 in
     --once) repeat=0; shift ;;
