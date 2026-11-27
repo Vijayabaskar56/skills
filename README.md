@@ -16,6 +16,7 @@ Agent skills by Vijayabaskar, for Claude Code, Codex, OpenCode and any agent
 | `html-report` | One-table HTML reports for clients and other teams, with a Markdown mirror |
 | `leaving-pr-comments` | Writing GitHub comments an agent posts for you, in your voice |
 | `legend-list-best-practices` | Building and fixing Legend List lists by the library's own contracts: virtualization, recycling, measurement |
+| `magnific-assets` | Credit-free Magnific art in Relax mode: subtle looping AVIF animations, images, video, audio and 3D, with loop judging and audits |
 | `modernize` | Rebasing an old PR and deciding whether it should still exist |
 | `no-use-effect` | Replacing `useEffect` with derived state, event handlers and data-fetching libraries |
 | `perf-check` | Benchmarking a screen's open and scroll frames on an Android phone against a baseline, with trace triage |
