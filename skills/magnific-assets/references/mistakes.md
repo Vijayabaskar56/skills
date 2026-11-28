@@ -46,6 +46,12 @@ Each of these cost a round on a real run. Read before the first generation.
 - **Frame rate.** Build and encode at 24 fps, the clip's own rate. At 12 fps every loop in one
   app stepped visibly, and a gate swinging 84 degrees jumped several pixels a frame at its tip.
   To save size, lower `--qalpha` first; never halve the frame rate of motion that travels.
+- **Never fill uncovered ground from the video clip.** When a part is redrawn from the art and
+  moves off what it covered, Kling's frames redraw that ground differently (a box lost its mark,
+  a stray post appeared), and the mix shows as two images stitched together. Make a clean plate
+  instead: one Nano Banana edit of the start image ("remove only the two barrier arms, keep
+  everything else identical"), aligned to the art by scale and offset, then use it only where
+  the part was.
 - **A part redrawn from the art breaks where something stood in front of it.** A pole crossing a
   barrier boom left a gap in the boom once it rose. Fill the hidden stretch by repeating the
   part's own pattern from one period away, then look at a zoomed frame of the moved pose.
